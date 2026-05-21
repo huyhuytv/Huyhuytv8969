@@ -1,0 +1,6 @@
+{
+  "name": "Taoyuan",
+  "description": "一款文字版田园模拟经营游戏，灵感来自星露谷物语 (A text-based countryside simulation game, inspired by Stardew Valley)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
