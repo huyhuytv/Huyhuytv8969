@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { useGameStore } from '@/stores/useGameStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 import { PASSOUT_HOUR, MIDNIGHT_HOUR } from '@/data/timeConstants'
 import { addLog } from './useGameLog'
 import { handleEndDay } from './useEndDay'
@@ -112,6 +113,9 @@ export const useGameClock = () => {
 
 // === 页面可见性处理（切标签页时暂停时钟，防止后台累积时间跳跃） ===
 document.addEventListener('visibilitychange', () => {
+  const settingsStore = useSettingsStore()
+  if (!settingsStore.pauseOnVisibilityChange) return
+
   if (document.hidden) {
     wasRunningBeforeHidden = !isPaused.value
     if (!isPaused.value) isPaused.value = true

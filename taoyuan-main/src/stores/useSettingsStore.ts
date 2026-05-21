@@ -26,6 +26,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const qmsgShowClose = ref(false)
   const qmsgShowIcon = ref(false)
   const qmsgShowReverse = ref(false)
+  const pauseOnVisibilityChange = ref(true)
 
   /** 背包物品筛选：选中的分类（空数组 = 显示全部） */
   const inventoryFilter = ref<ItemCategory[]>([])
@@ -91,6 +92,7 @@ export const useSettingsStore = defineStore('settings', () => {
       qmsgShowClose: qmsgShowClose.value,
       qmsgShowIcon: qmsgShowIcon.value,
       qmsgShowReverse: qmsgShowReverse.value,
+      pauseOnVisibilityChange: pauseOnVisibilityChange.value,
       inventoryFilter: inventoryFilter.value
     }
   }
@@ -111,6 +113,7 @@ export const useSettingsStore = defineStore('settings', () => {
     qmsgShowClose.value = data?.qmsgShowClose ?? false
     qmsgShowIcon.value = data?.qmsgShowIcon ?? false
     qmsgShowReverse.value = data?.qmsgShowReverse ?? false
+    pauseOnVisibilityChange.value = data?.pauseOnVisibilityChange ?? true
     inventoryFilter.value = data?.inventoryFilter ?? []
     syncQmsgConfig()
     const { sfxEnabled, bgmEnabled } = useAudio()
@@ -137,6 +140,7 @@ export const useSettingsStore = defineStore('settings', () => {
     qmsgShowClose,
     qmsgShowIcon,
     qmsgShowReverse,
+    pauseOnVisibilityChange,
     inventoryFilter,
     changeFontSize,
     changeTheme,

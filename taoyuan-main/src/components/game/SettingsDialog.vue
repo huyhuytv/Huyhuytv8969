@@ -42,6 +42,25 @@
                   </Button>
                   <Button class="py-1 px-3" @click="cycleSpeed">{{ $t('settings.speed', { speed: gameSpeed }) }}</Button>
                 </div>
+                <div class="flex items-center justify-center mt-3 pt-2 border-t border-accent/20">
+                  <span class="text-xs text-muted mr-2">{{ $t('settings.pause_on_hidden') }}</span>
+                  <div class="flex space-x-1">
+                    <Button
+                      class="py-0.5 px-2 text-[10px]"
+                      :class="{ '!bg-accent !text-bg': settingsStore.pauseOnVisibilityChange }"
+                      @click="settingsStore.pauseOnVisibilityChange = true"
+                    >
+                      {{ $t('settings.on') }}
+                    </Button>
+                    <Button
+                      class="py-0.5 px-2 text-[10px]"
+                      :class="{ '!bg-accent !text-bg': !settingsStore.pauseOnVisibilityChange }"
+                      @click="settingsStore.pauseOnVisibilityChange = false"
+                    >
+                      {{ $t('settings.off') }}
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               <!-- 音频控制 -->

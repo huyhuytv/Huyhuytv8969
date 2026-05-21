@@ -61,6 +61,7 @@ export default {
     appearance: 'Ngoại hình',
     notification: 'Thông báo',
     time_control: 'kiểm soát thời gian',
+    pause_on_hidden: '后台时暂停',
     pause: 'tạm dừng',
     resume: 'tiếp tục',
     speed: 'tốc độ {speed}×',
