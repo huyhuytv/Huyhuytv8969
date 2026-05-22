@@ -461,7 +461,7 @@ export const DYNAMIC_EVENTS: DynamicEvent[] = [
           const { addLog, showFloat } = useGameLog()
           consumeStamina(10)
           addLog('Hảo hán không ăn thiệt thỏi trước mắt, bạn ba chân bốn cẳng chuồn lẹ để lại con lợn húc đầu vào gốc cây.')
-          showFloat('Trừ 10 thể lực', 'warning')
+          showFloat('Trừ 10 thể lực', 'danger')
         }
       }
     ]
@@ -637,7 +637,7 @@ export const DYNAMIC_EVENTS: DynamicEvent[] = [
           const { addLog, showFloat } = useGameLog()
           consumeStamina(10)
           addLog('Bạn rẽ qua bụi gai mịt mù lội suối hòng vòng qua, bị gai cào xước xát đôi chút.')
-          showFloat('Mất 10 Thể lực', 'warning')
+          showFloat('Mất 10 Thể lực', 'danger')
         }
       }
     ]
