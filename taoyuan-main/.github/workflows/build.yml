@@ -81,6 +81,7 @@ jobs:
         with:
           cache-read-only: false
           build-root-directory: android
+          add-job-summary: false
 
       - name: 构建前端
         run: |

@@ -84,6 +84,7 @@ jobs:
         with:
           cache-read-only: false
           build-root-directory: taoyuan-main/android
+          add-job-summary: false
 
       - name: 构建前端
         working-directory: ./taoyuan-main
