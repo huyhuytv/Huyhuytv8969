@@ -20,15 +20,15 @@ jobs:
           - os: windows-latest
             platform: win
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
+      - name: 配置 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - uses: pnpm/action-setup@v4
         with:
-          version: latest
-      - name: 配置 Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 20
-          cache: 'pnpm'
+          version: 9
+          package_json_file: taoyuan-main/package.json
 
       - name: 缓存 Electron Builder
         uses: actions/cache@v5
@@ -36,7 +36,7 @@ jobs:
           path: |
             ~/AppData/Local/electron/Cache
             ~/AppData/Local/electron-builder/Cache
-          key: electron-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          key: electron-${{ runner.os }}-${{ hashFiles('taoyuan-main/pnpm-lock.yaml') }}
           restore-keys: |
             electron-${{ runner.os }}-
 
@@ -61,15 +61,15 @@ jobs:
     name: 构建 Android APK
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
-        with:
-          version: latest
+      - uses: actions/checkout@v4
       - name: 配置 Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          package_json_file: taoyuan-main/package.json
       - name: 配置 Java
         uses: actions/setup-java@v5
         with:
@@ -113,7 +113,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: 获取版本号
         id: get_version
