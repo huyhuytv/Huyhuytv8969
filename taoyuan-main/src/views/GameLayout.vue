@@ -51,6 +51,11 @@
       <HeartEventDialog v-if="pendingHeartEvent" :event="pendingHeartEvent" @close="closeHeartEvent" />
     </Transition>
 
+    <!-- Liên kết động (Random Events Dialog) -->
+    <Transition name="panel-fade">
+      <DynamicEventDialog />
+    </Transition>
+
     <!-- 仙灵发现场景弹窗 -->
     <Transition name="panel-fade">
       <DiscoveryScene
@@ -437,6 +442,7 @@
   import { useFocusTrap } from '@/composables/useFocusTrap'
   import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
+  import DynamicEventDialog from '@/components/game/DynamicEventDialog.vue'
   import { useAnimalStore } from '@/stores/useAnimalStore'
   import { useGameStore, SEASON_NAMES } from '@/stores/useGameStore'
   import { useHomeStore } from '@/stores/useHomeStore'

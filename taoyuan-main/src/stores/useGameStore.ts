@@ -19,6 +19,8 @@ import { useAnimalStore } from './useAnimalStore'
 import { useInventoryStore } from './useInventoryStore'
 import { usePlayerStore } from './usePlayerStore'
 import { useHiddenNpcStore } from './useHiddenNpcStore'
+import { useGameLog } from '@/composables/useGameLog'
+import { useDynamicEventStore } from './useDynamicEventStore'
 import i18n from '@/locales'
 const tText = (zh: string, vi: string) => { return i18n.global.locale.value === 'vi' ? vi : zh }
 
@@ -147,6 +149,9 @@ export const useGameStore = defineStore('game', () => {
       midnightWarned.value = true
       return { ok: true, passedOut: false, message: tText('Đã quá nửa đêm và bạn bắt đầu cảm thấy buồn ngủ……', 'Đã quá nửa đêm và bạn bắt đầu cảm thấy buồn ngủ...') }
     }
+
+    // Kích hoạt event ngẫu nhiên sau khi thời gian trôi qua
+    useDynamicEventStore().checkRandomEvents()
 
     return { ok: true, passedOut: false, message: '' }
   }

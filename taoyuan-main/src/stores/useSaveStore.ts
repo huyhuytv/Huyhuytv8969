@@ -28,6 +28,7 @@ import { useHanhaiStore } from './useHanhaiStore'
 import { useFishPondStore } from './useFishPondStore'
 import { useTutorialStore } from './useTutorialStore'
 import { useHiddenNpcStore } from './useHiddenNpcStore'
+import { useDynamicEventStore } from './useDynamicEventStore'
 import i18n from '@/locales'
 const tText = (zh: string, vi: string) => { return i18n.global.locale.value === 'vi' ? vi : zh }
 
@@ -150,6 +151,7 @@ export const useSaveStore = defineStore('save', () => {
       const fishPondStore = useFishPondStore()
       const tutorialStore = useTutorialStore()
       const hiddenNpcStore = useHiddenNpcStore()
+      const dynamicEventStore = useDynamicEventStore()
 
       const data = {
         game: gameStore.serialize(),
@@ -178,6 +180,7 @@ export const useSaveStore = defineStore('save', () => {
         fishPond: fishPondStore.serialize(),
         tutorial: tutorialStore.serialize(),
         hiddenNpc: hiddenNpcStore.serialize(),
+        dynamicEvent: dynamicEventStore.serialize(),
         savedAt: new Date().toISOString()
       }
       localStorage.setItem(`${SAVE_KEY_PREFIX}${slot}`, encrypt(JSON.stringify(data)))
@@ -228,6 +231,7 @@ export const useSaveStore = defineStore('save', () => {
       const fishPondStore = useFishPondStore()
       const tutorialStore = useTutorialStore()
       const hiddenNpcStore = useHiddenNpcStore()
+      const dynamicEventStore = useDynamicEventStore()
 
       gameStore.deserialize(data.game)
       playerStore.deserialize(data.player)
@@ -255,6 +259,7 @@ export const useSaveStore = defineStore('save', () => {
       if (data.fishPond) fishPondStore.deserialize(data.fishPond)
       if (data.tutorial) tutorialStore.deserialize(data.tutorial)
       if (data.hiddenNpc) hiddenNpcStore.deserialize(data.hiddenNpc)
+      if (data.dynamicEvent) dynamicEventStore.deserialize(data.dynamicEvent)
       activeSlot.value = slot
       return true
     } catch {
