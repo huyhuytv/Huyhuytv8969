@@ -31,7 +31,7 @@
       </div>
 
       <!-- 区域筛选 -->
-      <div class="grid grid-cols-3 md:grid-cols-none md:flex gap-1 md:space-x-1 mb-2 flex-wrap">
+      <div class="grid grid-cols-3 md:grid-cols-none md:flex gap-1 md:space-x-1 mb-2 flex-wrap" role="list">
         <button
           v-for="z in ZONE_FILTERS"
           :key="z.key"
@@ -45,11 +45,15 @@
 
       <div class="flex flex-col space-y-2 max-h-72 overflow-y-auto">
         <div
-          v-for="goal in filteredGoals"
+                v-for="goal in filteredGoals"
           :key="goal.monsterId"
-          class="border rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5 mr-1"
+          class="border rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 mr-1"
+                role="button"
+                tabindex="0"
           :class="isGoalClaimed(goal.monsterId) ? 'border-success/30' : 'border-accent/20'"
           @click="selectedGoal = goal"
+                @keydown.enter.prevent="selectedGoal = goal"
+                @keydown.space.prevent="selectedGoal = goal"
         >
           <div class="flex items-center justify-between mb-1">
             <div class="flex items-center space-x-1.5">
@@ -249,10 +253,14 @@
     <!-- bang hội商店 -->
     <div v-if="tab === 'shop'" class="flex flex-col space-y-2">
       <div
-        v-for="item in GUILD_SHOP_ITEMS"
+                v-for="item in GUILD_SHOP_ITEMS"
         :key="item.itemId"
-        class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+        class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
         @click="openShopModal(item)"
+                @keydown.enter.prevent="openShopModal(item)"
+                @keydown.space.prevent="openShopModal(item)"
       >
         <div>
           <p class="text-sm" :class="guildStore.isShopItemUnlocked(item.itemId) ? '' : 'text-muted'">{{ item.name }}</p>
@@ -432,7 +440,7 @@
         <div class="max-h-72 overflow-y-auto flex flex-col space-y-3">
           <div v-for="group in monsterGroups" :key="group.label">
             <p class="text-xs text-accent mb-1">{{ group.label }}</p>
-            <div class="grid grid-cols-3 md:grid-cols-5 gap-1 mr-1">
+            <div class="grid grid-cols-3 md:grid-cols-5 gap-1 mr-1" role="list">
               <div
                 v-for="monster in group.monsters"
                 :key="monster.id"
@@ -521,7 +529,7 @@
         </div>
         <span class="text-accent whitespace-nowrap">{{ Math.round((guildStore.completedGoalCount / MONSTER_GOALS.length) * 100) }}%</span>
       </div>
-      <div class="grid grid-cols-2 gap-x-3 gap-y-0.5">
+      <div class="grid grid-cols-2 gap-x-3 gap-y-0.5" role="list">
         <div class="flex items-center justify-between">
           <span class="text-xs text-muted">Thập tự chinh đã hoàn thành</span>
           <span class="text-xs">{{ guildStore.completedGoalCount }}/{{ MONSTER_GOALS.length }}</span>

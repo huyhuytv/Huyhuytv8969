@@ -1,79 +1,63 @@
 <template>
-  <div class="border-b border-accent/30 pb-2 md:pb-3 flex flex-col space-y-1" role="region" aria-label="Thanh trạng thái nhân vật và trò chơi">
-    <!-- 第一行：日期时间天气 + 铜钱 -->
-    <div class="flex items-center justify-between text-xs md:text-sm">
-      <div class="flex items-center space-x-2 md:space-x-3">
-        <span class="text-accent font-bold">{{ $t('status_bar.game_title') }}</span>
-        <span class="text-muted text-xs max-w-16 truncate" :aria-label="'Tên người chơi: ' + playerStore.playerName">{{ playerStore.playerName }}</span>
-        <span class="hidden md:inline" :aria-label="'Năm: ' + gameStore.year">{{ $t('menu.year', { year: gameStore.year }) }}</span>
-        <span :aria-label="'Mùa ' + SEASON_NAMES[gameStore.season] + ', Ngày ' + gameStore.day">{{ SEASON_NAMES[gameStore.season] }} {{ $t('menu.day', { day: gameStore.day }) }}</span>
-        <span class="text-muted hidden md:inline" :aria-label="'Thứ ' + gameStore.weekdayName">({{ gameStore.weekdayName }})</span>
-        <span :class="{ 'text-danger': gameStore.isLateNight }" :aria-label="'Thời gian game: ' + gameStore.timeDisplay">{{ gameStore.timeDisplay }}</span>
-        <span class="text-muted" :aria-label="'Thời tiết: ' + WEATHER_NAMES[gameStore.weather]">{{ WEATHER_NAMES[gameStore.weather] }}</span>
+  <div class="border-b border-accent/30 pb-2 md:pb-3 flex flex-col space-y-1 focus:outline-none focus:ring-2 focus:ring-accent/40 rounded-xs p-1 -mx-1" 
+       role="region" 
+       tabindex="0"
+       :aria-label="statusBarAriaLabel">
+    <div aria-hidden="true" class="flex flex-col space-y-1">
+      <!-- 第一行：日期时间天气 + 铜钱 -->
+      <div class="flex items-center justify-between text-xs md:text-sm">
+        <div class="flex items-center space-x-2 md:space-x-3">
+          <span class="text-accent font-bold">{{ $t('status_bar.game_title') }}</span>
+          <span class="text-muted text-xs max-w-16 truncate">{{ playerStore.playerName }}</span>
+          <span class="hidden md:inline">{{ $t('menu.year', { year: gameStore.year }) }}</span>
+          <span>{{ SEASON_NAMES[gameStore.season] }} {{ $t('menu.day', { day: gameStore.day }) }}</span>
+          <span class="text-muted hidden md:inline">({{ gameStore.weekdayName }})</span>
+          <span :class="{ 'text-danger': gameStore.isLateNight }">{{ gameStore.timeDisplay }}</span>
+          <span class="text-muted">{{ WEATHER_NAMES[gameStore.weather] }}</span>
+        </div>
+        <span class="text-accent shrink-0">
+          <Coins :size="12" class="inline" />
+          {{ playerStore.money }}{{ $t('status_bar.money_unit') }}
+        </span>
       </div>
-      <span class="text-accent shrink-0" :aria-label="'Số tiền: ' + playerStore.money + ' đồng vàng'">
-        <Coins :size="12" class="inline" aria-hidden="true" />
-        {{ playerStore.money }}{{ $t('status_bar.money_unit') }}
-      </span>
-    </div>
 
-    <!-- 第二行：状态条 + 音频控制 -->
-    <div class="flex items-center justify-between text-xs flex-wrap">
-      <div class="flex items-center space-x-2 md:space-x-4 flex-wrap">
-        <!-- 体力 -->
-        <div class="flex items-center space-x-1" :aria-label="'Thể lực: ' + playerStore.stamina + ' trên ' + playerStore.maxStamina">
-          <span :class="{ 'text-danger stamina-critical': playerStore.isExhausted }">
-            <Zap :size="12" class="inline" aria-hidden="true" />
-            {{ playerStore.stamina }}/{{ playerStore.maxStamina }}
-          </span>
-          <div 
-            class="w-14 md:w-20 h-2 bg-bg rounded-xs border border-accent/20"
-            role="progressbar"
-            :aria-valuenow="playerStore.stamina"
-            aria-valuemin="0"
-            :aria-valuemax="playerStore.maxStamina"
-            :aria-label="'Tiến trình thể lực: ' + playerStore.staminaPercent + '%'"
-          >
-            <div
-              class="h-full rounded-xs transition-all duration-300"
-              :class="staminaBarColor"
-              :style="{ width: playerStore.staminaPercent + '%' }"
-            />
+      <!-- 第二行：状态条 + 音频控制 -->
+      <div class="flex items-center justify-between text-xs flex-wrap">
+        <div class="flex items-center space-x-2 md:space-x-4 flex-wrap">
+          <!-- 体力 -->
+          <div class="flex items-center space-x-1">
+            <span :class="{ 'text-danger stamina-critical': playerStore.isExhausted }">
+              <Zap :size="12" class="inline" />
+              {{ playerStore.stamina }}/{{ playerStore.maxStamina }}
+            </span>
+            <div class="w-14 md:w-20 h-2 bg-bg rounded-xs border border-accent/20">
+              <div
+                class="h-full rounded-xs transition-all duration-300"
+                :class="staminaBarColor"
+                :style="{ width: playerStore.staminaPercent + '%' }"
+              />
+            </div>
           </div>
-        </div>
-        <!-- HP（矿洞或受伤时显示） -->
-        <div v-if="showHpBar" class="flex items-center space-x-1" :aria-label="'Máu HP: ' + playerStore.hp + ' trên ' + playerStore.getMaxHp()">
-          <span :class="{ 'text-danger stamina-critical': playerStore.getIsLowHp() }">
-            <Heart :size="12" class="inline" aria-hidden="true" />
-            {{ playerStore.hp }}/{{ playerStore.getMaxHp() }}
-          </span>
-          <div 
-            class="w-12 md:w-16 h-2 bg-bg rounded-xs border border-accent/20"
-            role="progressbar"
-            :aria-valuenow="playerStore.hp"
-            aria-valuemin="0"
-            :aria-valuemax="playerStore.getMaxHp()"
-            :aria-label="'Tiến trình máu HP: ' + playerStore.getHpPercent() + '%'"
-          >
-            <div
-              class="h-full rounded-xs transition-all duration-300"
-              :class="hpBarColor"
-              :style="{ width: playerStore.getHpPercent() + '%' }"
-            />
+          <!-- HP（矿洞或受伤时显示） -->
+          <div v-if="showHpBar" class="flex items-center space-x-1">
+            <span :class="{ 'text-danger stamina-critical': playerStore.getIsLowHp() }">
+              <Heart :size="12" class="inline" />
+              {{ playerStore.hp }}/{{ playerStore.getMaxHp() }}
+            </span>
+            <div class="w-12 md:w-16 h-2 bg-bg rounded-xs border border-accent/20">
+              <div
+                class="h-full rounded-xs transition-all duration-300"
+                :class="hpBarColor"
+                :style="{ width: playerStore.getHpPercent() + '%' }"
+              />
+            </div>
           </div>
-        </div>
-        <!-- 剩余时间 -->
-        <div class="flex items-center space-x-1" :aria-label="'Thời gian còn lại trong ngày lẻ: ' + timePercent + '%'">
-          <Clock :size="12" class="tinline" aria-hidden="true" />
-          <div 
-            class="w-12 md:w-16 h-2 bg-bg rounded-xs border border-accent/20"
-            role="progressbar"
-            :aria-valuenow="timePercent"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            :aria-label="'Tiến trình thời gian còn lại: ' + timePercent + '%'"
-          >
-            <div class="h-full rounded-xs transition-all duration-300" :class="timeBarColor" :style="{ width: timePercent + '%' }" />
+          <!-- 剩余时间 -->
+          <div class="flex items-center space-x-1">
+            <Clock :size="12" class="inline" />
+            <div class="w-12 md:w-16 h-2 bg-bg rounded-xs border border-accent/20">
+              <div class="h-full rounded-xs transition-all duration-300" :class="timeBarColor" :style="{ width: timePercent + '%' }" />
+            </div>
           </div>
         </div>
       </div>
@@ -87,7 +71,9 @@
   import { usePlayerStore } from '@/stores/usePlayerStore'
   import { DAY_START_HOUR, DAY_END_HOUR } from '@/data/timeConstants'
   import { Zap, Heart, Clock, Coins } from 'lucide-vue-next'
+  import { useI18n } from 'vue-i18n'
 
+  const { t, locale } = useI18n()
   const gameStore = useGameStore()
   const playerStore = usePlayerStore()
 
@@ -109,6 +95,26 @@
     if (pct <= 25) return 'bg-danger stamina-critical'
     if (pct <= 60) return 'bg-danger'
     return 'bg-success'
+  })
+
+  const statusBarAriaLabel = computed(() => {
+    let label = ''
+    if (locale.value === 'vi') {
+        label += `Tên người chơi: ${playerStore.playerName}. `
+        label += `Số tiền: ${playerStore.money} ${t('status_bar.money_unit')}. `
+        label += `Thời gian game: ${gameStore.timeDisplay}, Thứ ${gameStore.weekdayName}, Mùa ${SEASON_NAMES[gameStore.season]} Năm ${gameStore.year}. `
+        label += `Thời tiết: ${WEATHER_NAMES[gameStore.weather]}. `
+        label += `Thể lực: ${playerStore.stamina} trên ${playerStore.maxStamina}. `
+        if (showHpBar.value) label += `Máu (HP): ${playerStore.hp} trên ${playerStore.getMaxHp()}. `
+    } else {
+        label += `Player Name: ${playerStore.playerName}. `
+        label += `Money: ${playerStore.money} ${t('status_bar.money_unit')}. `
+        label += `Game Time: ${gameStore.timeDisplay}, ${gameStore.weekdayName}, Season ${SEASON_NAMES[gameStore.season]} Year ${gameStore.year}. `
+        label += `Weather: ${WEATHER_NAMES[gameStore.weather]}. `
+        label += `Stamina: ${playerStore.stamina} out of ${playerStore.maxStamina}. `
+        if (showHpBar.value) label += `HP: ${playerStore.hp} out of ${playerStore.getMaxHp()}. `
+    }
+    return label
   })
 
   /** 剩余时间百分比 */

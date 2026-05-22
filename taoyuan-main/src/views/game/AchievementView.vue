@@ -49,7 +49,7 @@
       </div>
       <div ref="collectionRef" class="max-h-60 overflow-y-auto" @scroll="onCollectionScroll">
         <div :style="{ paddingTop: topPad + 'px', paddingBottom: bottomPad + 'px' }">
-          <div class="grid grid-cols-3 md:grid-cols-5 gap-1">
+          <div class="grid grid-cols-3 md:grid-cols-5 gap-1" role="list">
             <div
               v-for="item in visibleItems"
               :key="item.id"
@@ -141,7 +141,7 @@
     <!-- 成就列表 -->
     <template v-if="tab === 'achievements'">
       <p class="text-xs text-muted mb-2">{{ $t('achievementView.completed_qty', { completed: achievementStore.completedAchievements.length, total: ACHIEVEMENTS.length }) }}</p>
-      <div class="grid grid-cols-3 md:grid-cols-5 gap-1 max-h-72 overflow-y-auto">
+      <div class="grid grid-cols-3 md:grid-cols-5 gap-1 max-h-72 overflow-y-auto" role="list">
         <div
           v-for="a in ACHIEVEMENTS"
           :key="a.id"
@@ -216,11 +216,15 @@
     <template v-if="tab === 'bundles'">
       <div class="flex flex-col space-y-1.5 max-h-72 overflow-y-auto">
         <div
-          v-for="bundle in COMMUNITY_BUNDLES"
+                v-for="bundle in COMMUNITY_BUNDLES"
           :key="bundle.id"
-          class="border rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5 mr-1"
+          class="border rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 mr-1"
+                role="button"
+                tabindex="0"
           :class="achievementStore.isBundleComplete(bundle.id) ? 'border-success/30' : 'border-accent/20'"
           @click="activeBundle = bundle"
+                @keydown.enter.prevent="activeBundle = bundle"
+                @keydown.space.prevent="activeBundle = bundle"
         >
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-1.5">
@@ -308,7 +312,7 @@
       <div class="flex flex-col space-y-2 max-h-72 overflow-y-auto">
         <div v-for="(items, category) in itemsByCategory" :key="category" class="border border-accent/20 rounded-xs p-2">
           <p class="text-xs text-muted mb-1">{{ $t('inventoryView.categories.' + category) }}</p>
-          <div class="grid grid-cols-3 md:grid-cols-5 gap-1">
+          <div class="grid grid-cols-3 md:grid-cols-5 gap-1" role="list">
             <div
               v-for="item in items"
               :key="item.id"
@@ -379,7 +383,7 @@
           <span class="text-xs text-muted">{{ $i18n.locale === 'vi' ? 'Tiến độ thu thập' : 'Tiến độ thu thập' }}</span>
           <span class="text-xs text-accent">{{ secretNoteStore.collectedCount }}/{{ secretNoteStore.totalNotes }}</span>
         </div>
-        <div class="grid grid-cols-3 md:grid-cols-5 gap-1 max-h-72 overflow-y-auto mb-3">
+        <div class="grid grid-cols-3 md:grid-cols-5 gap-1 max-h-72 overflow-y-auto mb-3" role="list">
           <div
             v-for="note in SECRET_NOTES"
             :key="note.id"
@@ -441,7 +445,7 @@
         </div>
         <span class="text-xs text-accent whitespace-nowrap">{{ achievementStore.perfectionPercent }}%</span>
       </div>
-      <div class="grid grid-cols-2 gap-x-3 gap-y-0.5">
+      <div class="grid grid-cols-2 gap-x-3 gap-y-0.5" role="list">
         <div class="flex items-center justify-between">
           <span class="text-xs text-muted">{{ $i18n.locale === 'vi' ? 'Thu hoạch 작 vật' : 'Thu hoạch cây trồng' }}</span>
           <span class="text-xs">{{ achievementStore.stats.totalCropsHarvested }}</span>

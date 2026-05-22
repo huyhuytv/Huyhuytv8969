@@ -1,16 +1,17 @@
 <template>
-  <div>
-    <h3 class="text-accent text-sm mb-3">
-      <Building :size="14" class="inline" />
+  <main aria-labelledby="home-page-title">
+    <h1 id="home-page-title" class="sr-only">Cơ sở hạ tầng trang trại</h1>
+    <h2 class="text-accent text-sm mb-3">
+      <Building :size="14" class="inline" aria-hidden="true" />
       Cơ sở hạ tầng
-    </h3>
+    </h2>
 
     <!-- 山洞 -->
-    <div class="border border-accent/20 rounded-xs p-3 mb-4">
-      <p class="text-sm text-accent mb-2">
-        <Mountain :size="14" class="inline" />
+    <section class="border border-accent/20 rounded-xs p-3 mb-4" aria-labelledby="cave-title">
+      <h3 id="cave-title" class="text-sm text-accent mb-2">
+        <Mountain :size="14" class="inline" aria-hidden="true" />
         {{ homeStore.caveUnlocked && homeStore.caveChoice !== 'none' ? homeStore.caveName : 'Hang động' }}
-      </p>
+      </h3>
       <div v-if="!homeStore.caveUnlocked">
         <p class="text-xs text-muted">Hang động vẫn chưa mở. (Tự động mở sau khi thu nhập tích lũy đạt đến một mức nhất định)</p>
       </div>
@@ -18,15 +19,23 @@
         <p class="text-xs text-muted mb-2">Chọn mục đích của hang động (không thể thay đổi sau khi chọn):</p>
         <div class="flex flex-col space-y-1">
           <div
-            class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
             @click="handleChooseCave('mushroom')"
+                @keydown.enter.prevent="handleChooseCave('mushroom')"
+                @keydown.space.prevent="handleChooseCave('mushroom')"
           >
             <span class="text-xs">Hang nấm</span>
             <span class="text-xs text-muted">mỗi ngày60%Xác suất sản xuất nấm</span>
           </div>
           <div
-            class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
             @click="handleChooseCave('fruit_bat')"
+                @keydown.enter.prevent="handleChooseCave('fruit_bat')"
+                @keydown.space.prevent="handleChooseCave('fruit_bat')"
           >
             <span class="text-xs">Hang dơi</span>
             <span class="text-xs text-muted">mỗi ngày50%Xác suất sản xuất trái cây</span>
@@ -89,19 +98,23 @@
         </div>
         <div v-else class="text-[10px] text-muted">Hang động đã được nâng cấp lên mức cao nhất.</div>
       </div>
-    </div>
+    </section>
 
     <!-- nhà kính -->
-    <div class="border border-accent/20 rounded-xs p-3 mb-4">
-      <p class="text-sm text-accent mb-2">
-        <Leaf :size="14" class="inline" />
+    <section class="border border-accent/20 rounded-xs p-3 mb-4" aria-labelledby="greenhouse-title">
+      <h3 id="greenhouse-title" class="text-sm text-accent mb-2">
+        <Leaf :size="14" class="inline" aria-hidden="true" />
         nhà kính
-      </p>
+      </h3>
       <div v-if="!homeStore.greenhouseUnlocked">
         <p class="text-xs text-muted mb-2">Sau khi mở khóa nhà kính, bạn có thể trồng cây vào bất kỳ mùa nào và cây trồng sẽ được tưới nước tự động.</p>
         <div
-          class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
           @click="showGreenhouseModal = true"
+                @keydown.enter.prevent="showGreenhouseModal = true"
+                @keydown.space.prevent="showGreenhouseModal = true"
         >
           <span class="text-xs">Mở khóa nhà kính</span>
           <span class="text-xs text-accent whitespace-nowrap">{{ GREENHOUSE_UNLOCK_COST }}văn bản</span>
@@ -110,15 +123,15 @@
       <div v-else>
         <p class="text-xs text-success">Nhà kính đang mở. Bạn có thể chuyển sang nhà kính để trồng cây trong bảng điều khiển trang trại.</p>
       </div>
-    </div>
+    </section>
 
     <!-- 仓库 -->
-    <div class="border border-accent/20 rounded-xs p-3">
+    <section class="border border-accent/20 rounded-xs p-3" aria-labelledby="warehouse-title">
       <div class="flex items-center justify-between mb-2">
-        <p class="text-sm text-accent">
-          <Warehouse :size="14" class="inline" />
+        <h3 id="warehouse-title" class="text-sm text-accent">
+          <Warehouse :size="14" class="inline" aria-hidden="true" />
           Nhà kho
-        </p>
+        </h3>
         <span v-if="warehouseStore.unlocked" class="text-xs text-muted">
           cái hộp {{ warehouseStore.chests.length }}/{{ warehouseStore.maxChests }}
         </span>
@@ -128,8 +141,12 @@
       <div v-if="!warehouseStore.unlocked">
         <p class="text-xs text-muted mb-2">Sau khi mở khóa kho, các hộp có thể được đặt để lưu trữ các vật phẩm theo danh mục.</p>
         <div
-          class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
           @click="showWarehouseUnlockModal = true"
+                @keydown.enter.prevent="showWarehouseUnlockModal = true"
+                @keydown.space.prevent="showWarehouseUnlockModal = true"
         >
           <span class="text-xs">Mở khóa nhà kho</span>
           <span class="text-xs text-accent whitespace-nowrap">{{ warehouseStore.UNLOCK_COST }}văn bản</span>
@@ -141,10 +158,14 @@
         <!-- cái hộp列表 -->
         <div v-if="warehouseStore.chests.length > 0" class="flex flex-col space-y-1.5 mb-2">
           <div
-            v-for="(chest, chestIdx) in warehouseStore.chests"
+                v-for="(chest, chestIdx) in warehouseStore.chests"
             :key="chest.id"
-            class="border border-accent/10 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+            class="border border-accent/10 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
             @click="openChestId = chest.id"
+                @keydown.enter.prevent="openChestId = chest.id"
+                @keydown.space.prevent="openChestId = chest.id"
           >
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-1.5">
@@ -232,7 +253,7 @@
           Thêm rương
         </Button>
       </template>
-    </div>
+    </section>
 
     <!-- Mở khóanhà kính弹窗 -->
     <Transition name="panel-fade">
@@ -419,10 +440,14 @@
           </div>
           <div class="flex flex-col space-y-1 max-h-60 overflow-y-auto">
             <div
-              v-for="item in depositableItems"
+                v-for="item in depositableItems"
               :key="item.itemId + item.quality"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="openChestQtyModal('deposit', openChestId!, item.itemId, item.quality, item.quantity)"
+                @keydown.enter.prevent="openChestQtyModal('deposit', openChestId!, item.itemId, item.quality, item.quantity)"
+                @keydown.space.prevent="openChestQtyModal('deposit', openChestId!, item.itemId, item.quality, item.quantity)"
             >
               <span class="text-xs truncate mr-2" :class="qualityTextClass(item.quality)">
                 {{ getItemName(item.itemId) }}
@@ -574,7 +599,7 @@
             <p class="text-sm text-accent">Làm rương</p>
             <Button class="py-0 px-1" :icon="X" :icon-size="12" @click="showAddChestModal = false" />
           </div>
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <div v-for="tier in CHEST_TIER_ORDER" :key="tier" class="border border-accent/20 rounded-xs p-2">
               <div class="flex items-center justify-between mb-1">
                 <div class="flex items-center space-x-1.5">
@@ -611,7 +636,7 @@
         </div>
       </div>
     </Transition>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

@@ -13,8 +13,12 @@
       </div>
       <p class="text-xs text-muted mb-2">{{ $t('forageView.desc') }}</p>
       <div
-        class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
         @click="handleForage"
+                @keydown.enter.prevent="handleForage"
+                @keydown.space.prevent="handleForage"
       >
         <span class="text-xs">{{ $t('forageView.btn_forage') }}</span>
         <span class="text-xs text-muted">{{ $t('forageView.stamina', { cur: playerStore.stamina, max: playerStore.maxStamina }) }}</span>
@@ -135,24 +139,36 @@
         <div ref="modalRef_kmp0p" class="game-panel max-w-xs w-full" role="dialog" aria-modal="true" tabindex="-1">
           <p class="text-sm text-accent mb-2">{{ $t('forageView.encounter_friendly', { name: encounter.animal.name }) }}</p>
           <p class="text-xs text-muted mb-3">{{ $t('forageView.encounter_friendly_desc', { name: encounter.animal.name }) }}</p>
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <div
-              class="flex items-center justify-between border border-success/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-success/5"
+                class="flex items-center justify-between border border-success/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-success/5"
+                role="button"
+                tabindex="0"
               @click="handleFriendlyCollect"
+                @keydown.enter.prevent="handleFriendlyCollect"
+                @keydown.space.prevent="handleFriendlyCollect"
             >
               <span class="text-xs text-success">{{ $t('forageView.encounter_friendly_collect') }}</span>
               <span class="text-[10px] text-muted">{{ $t('forageView.encounter_friendly_xp', { xp: encounter.animal.collectExp }) }}</span>
             </div>
             <div
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="handleFriendlyChase"
+                @keydown.enter.prevent="handleFriendlyChase"
+                @keydown.space.prevent="handleFriendlyChase"
             >
               <span class="text-xs">{{ $t('forageView.encounter_chase') }}</span>
               <span class="text-[10px] text-muted">{{ $t('forageView.encounter_friendly_xp', { xp: encounter.animal.chaseExp }) }}</span>
             </div>
             <div
-              class="flex items-center justify-between border border-accent/10 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/10 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="encounter = null"
+                @keydown.enter.prevent="encounter = null"
+                @keydown.space.prevent="encounter = null"
             >
               <span class="text-xs text-muted">{{ $t('forageView.encounter_leave') }}</span>
             </div>
@@ -168,7 +184,7 @@
           <p class="text-sm text-danger mb-2">{{ $t('forageView.encounter_hostile', { name: forestCombatMonster.name }) }}</p>
 
           <!-- 玩家 vs 野兽 -->
-          <div class="grid grid-cols-[1fr_auto_1fr] mb-3 items-center" style="column-gap: 6px">
+          <div class="grid grid-cols-[1fr_auto_1fr] mb-3 items-center" style="column-gap: 6px" role="list">
             <!-- 玩家 -->
             <div class="border border-accent/10 rounded-xs p-2">
               <p class="text-xs text-center mb-1.5">{{ $t('forageView.combat_you') }}</p>
@@ -198,7 +214,7 @@
           </div>
 
           <!-- 操作 -->
-          <div class="grid grid-cols-3 mb-3" style="column-gap: 4px">
+          <div class="grid grid-cols-3 mb-3" style="column-gap: 4px" role="list">
             <div
               class="flex flex-col items-center border border-accent/20 rounded-xs py-1.5"
               :class="forestCombatAnimLock ? 'opacity-50' : 'cursor-pointer hover:bg-accent/5'"
@@ -222,9 +238,13 @@
               <span class="text-[10px] text-muted">{{ $t('forageView.combat_action_defend_sub') }}</span>
             </div>
             <div
-              class="flex flex-col items-center border border-danger/20 rounded-xs py-1.5 cursor-pointer hover:bg-danger/5"
+                class="flex flex-col items-center border border-danger/20 rounded-xs py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-danger/5"
+                role="button"
+                tabindex="0"
               :class="forestCombatAnimLock ? 'opacity-50' : ''"
               @click="!forestCombatAnimLock && handleForestCombat('flee')"
+                @keydown.enter.prevent="!forestCombatAnimLock && handleForestCombat('flee')"
+                @keydown.space.prevent="!forestCombatAnimLock && handleForestCombat('flee')"
             >
               <span class="text-xs text-danger">
                 <MoveRight :size="12" class="inline" />

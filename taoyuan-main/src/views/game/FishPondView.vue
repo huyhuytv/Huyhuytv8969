@@ -102,13 +102,17 @@
           <!-- 鱼列表 -->
           <div v-else class="flex flex-col space-y-1.5 max-h-80 overflow-auto">
             <div
-              v-for="fish in fishPondStore.pond.fish"
+                v-for="fish in fishPondStore.pond.fish"
               :key="fish.id"
-              class="border rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5 transition-colors mr-1"
+              class="border rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 transition-colors mr-1"
+                role="button"
+                tabindex="0"
               :class="
                 fish.sick ? 'border-danger/30' : selectedBreedingFish?.id === fish.id ? 'border-accent bg-accent/10' : 'border-accent/20'
               "
               @click="openFishDetail(fish)"
+                @keydown.enter.prevent="openFishDetail(fish)"
+                @keydown.space.prevent="openFishDetail(fish)"
             >
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-1.5">
@@ -200,7 +204,7 @@
       <!-- ===== sách minh họa Tab ===== -->
       <template v-if="currentTab === 'compendium'">
         <!-- thế hệ数筛选 -->
-        <div class="grid grid-cols-5 space-x-1 mb-2">
+        <div class="grid grid-cols-5 space-x-1 mb-2" role="list">
           <Button
             v-for="g in 5"
             :key="g"
@@ -226,7 +230,7 @@
         </div>
 
         <!-- 品种网格 -->
-        <div class="grid grid-cols-5 gap-1 p-2 max-h-[50vh] overflow-auto">
+        <div class="grid grid-cols-5 gap-1 p-2 max-h-[50vh] overflow-auto" role="list">
           <div
             v-for="breed in currentGenBreeds"
             :key="breed.breedId"
@@ -247,7 +251,7 @@
             </div>
             <span class="text-xs text-accent whitespace-nowrap">{{ fishPondStore.discoveredBreeds.size }}/{{ totalBreedCount }}</span>
           </div>
-          <div class="grid grid-cols-2 gap-x-3 gap-y-0.5">
+          <div class="grid grid-cols-2 gap-x-3 gap-y-0.5" role="list">
             <div v-for="g in 5" :key="g" class="flex items-center justify-between">
               <span class="text-xs text-muted">{{ g }}thế hệ</span>
               <span class="text-xs">{{ discoveredCountByGen(g) }}/{{ BREED_COUNTS[g] }}</span>

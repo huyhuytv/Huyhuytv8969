@@ -376,6 +376,367 @@ export const DYNAMIC_EVENTS: DynamicEvent[] = [
         }
       }
     ]
+  },
+  {
+    id: 'traveling_monk',
+    title: 'Nhà sư khất thực',
+    description: 'Một nhà sư áo vải mộc mạc đang chậm rãi cất bước. Ngài dừng lại gõ mõ và mỉm cười hiền từ nhìn bạn.',
+    probability: 0.04,
+    condition: () => {
+      const game = useGameStore()
+      return game.hour >= 6 && game.hour <= 12 && game.currentLocationGroup === 'village_area'
+    },
+    choices: [
+      {
+        id: 'donate_money',
+        text: 'Cúng dường 20 G (-20 G, +Phước lành)',
+        onSelect: () => {
+          const { spendMoney, restoreStamina } = usePlayerStore()
+          const { addLog, showFloat } = useGameLog()
+          if (spendMoney(20)) {
+            restoreStamina(20)
+            addLog('Bạn thành tâm cúng dường 20 G. Nhà sư tụng một đoạn kinh cầu an, bạn thấy trong lòng nhẹ nhõm vô cùng.')
+            showFloat('Hồi 20 thể lực', 'success')
+          } else {
+            addLog('Bạn sờ túi nhưng không đủ 20 G đành chắp tay cáo lỗi.')
+          }
+        }
+      },
+      {
+        id: 'donate_food',
+        text: 'Biếu quả dại (-1 Quả dại, +Phước lành)',
+        canSelect: () => useInventoryStore().hasItem('wild_berry', 1),
+        onSelect: () => {
+          const { removeItem } = useInventoryStore()
+          const { restoreStamina } = usePlayerStore()
+          const { addLog, showFloat } = useGameLog()
+          removeItem('wild_berry', 1)
+          restoreStamina(15)
+          addLog('Nhà sư nhận lấy quả dại và mỉm cười chúc phúc cho bạn. Sự thanh thản lan tỏa khắp cơ thể.')
+          showFloat('Hồi 15 thể lực', 'success')
+        }
+      },
+      {
+        id: 'ignore',
+        text: 'Lặng lẽ rời đi',
+        onSelect: () => {
+          useGameLog().addLog('Bạn chắp tay chào nhà sư rồi tiếp tục công việc của mình.')
+        }
+      }
+    ]
+  },
+  {
+    id: 'wild_boar_attack',
+    title: 'Lợn rừng nổi điên',
+    description: 'Từ trong bụi rậm dày đặc, một con lợn rừng mắt đỏ ngầu lao rầm rầm về phía bạn. Nó có vẻ đang rất hung dữ!',
+    probability: 0.03,
+    condition: () => useGameStore().currentLocationGroup === 'nature' || useGameStore().currentLocationGroup === 'mine',
+    choices: [
+      {
+        id: 'fight',
+        text: 'Nghênh chiến (Tốn 40 Thể lực, Cơ hội nhận ngẫu nhiên)',
+        canSelect: () => usePlayerStore().stamina >= 40,
+        onSelect: () => {
+          const { consumeStamina, earnMoney } = usePlayerStore()
+          const { addItem } = useInventoryStore()
+          const { addLog, showFloat } = useGameLog()
+          consumeStamina(40)
+          if (Math.random() > 0.3) {
+            addItem('wild_mushroom', 3)
+            earnMoney(100)
+            addLog('Sau một trận kịch chiến, con lợn rừng luống cuống bỏ chạy, đánh rơi vài nấm rừng và bạn lượm được chút vật phẩm đáng giá.')
+            showFloat('Nhận 3 Nấm, +100 G', 'success')
+          } else {
+            addLog('Sức lợn rừng quá trâu! Bạn bị húc ngã lăn cù và chật vật lắm mới đuổi được nó đi. Cơ thể ê ẩm.')
+            showFloat('Thua trận, mất 40 thể lực', 'danger')
+          }
+        }
+      },
+      {
+        id: 'run_away',
+        text: 'Bỏ chạy thục mạng (Tốn 10 Thể lực)',
+        canSelect: () => usePlayerStore().stamina >= 10,
+        onSelect: () => {
+          const { consumeStamina } = usePlayerStore()
+          const { addLog, showFloat } = useGameLog()
+          consumeStamina(10)
+          addLog('Hảo hán không ăn thiệt thỏi trước mắt, bạn ba chân bốn cẳng chuồn lẹ để lại con lợn húc đầu vào gốc cây.')
+          showFloat('Trừ 10 thể lực', 'warning')
+        }
+      }
+    ]
+  },
+  {
+    id: 'merchant_dropped_goods',
+    title: 'Túi hạt giống đánh rơi',
+    description: 'Trông thấy một cỗ xe buôn vừa vội vã đi qua làm rơi lại một chiếc bao tải nhỏ xoành xoạch trên mặt đất. Bên trong là một ít hạt giống lúa.',
+    probability: 0.04,
+    condition: () => useGameStore().currentLocationGroup === 'village_area',
+    choices: [
+      {
+        id: 'keep_it',
+        text: 'Giấu làm của riêng (+2 Hạt mầm cổ đại)',
+        onSelect: () => {
+          const { addItem } = useInventoryStore()
+          const { addLog, showFloat } = useGameLog()
+          addItem('ancient_seed', 2)
+          addLog('Bạn dáo dác nhìn quanh rồi nhanh tay nhét gói hạt giống vào túi. Chẳng ai hay biết cả.')
+          showFloat('Nhận 2 Hạt mầm cổ', 'success')
+        }
+      },
+      {
+        id: 'return',
+        text: 'Gọi với theo trả lại',
+        onSelect: () => {
+          const { earnMoney } = usePlayerStore()
+          const { addLog, showFloat } = useGameLog()
+          if (Math.random() > 0.5) {
+            earnMoney(100)
+            addLog('Thương nhân nghe tiếng gọi vội dừng lại. Lão ta rối rít cảm ơn vì đây là hàng quý và thưởng nóng cho bạn 100 G.')
+            showFloat('Nhận 100 G', 'success')
+          } else {
+            addLog('Bạn chạy theo đưa lại túi, người thương nhân nhận lấy gật đầu mỉm cười rồi vội vàng đi tiếp.')
+          }
+        }
+      }
+    ]
+  },
+  {
+    id: 'injured_bird',
+    title: 'Chú chim sếu bị thương',
+    description: 'Một con sếu rớt lờ mờ rơi xuống bãi cỏ trước mặt bạn, cánh của nó đang rỉ máu và nó kêu lên những tiếng thảm thương.',
+    probability: 0.03,
+    condition: () => true,
+    choices: [
+      {
+        id: 'heal_bird',
+        text: 'Băng bó (-1 Thảo dược, +Phần thưởng)',
+        canSelect: () => useInventoryStore().hasItem('herb', 1),
+        onSelect: () => {
+          const { removeItem, addItem } = useInventoryStore()
+          const { earnMoney } = usePlayerStore()
+          const { addLog, showFloat } = useGameLog()
+          removeItem('herb', 1)
+          if (Math.random() > 0.5) {
+            earnMoney(150)
+            addLog('Bạn nhai nhuyễn thảo dược và đắp lên vết thương con sếu. Thế quái nào nó nhả ra một viên dạ minh châu đổi lấy 150 G trước khi bay đi!')
+            showFloat('Nhận 150 G', 'success')
+          } else {
+            addItem('prismatic_shard', 1)
+            addLog('Khi được băng bó, nó ngậm trong mỏ một mảnh ngọc kỳ lạ đặt vào tay bạn gật đầu như thay lời cảm ơn.')
+            showFloat('Nhận Mảnh ngũ sắc', 'success')
+          }
+        }
+      },
+      {
+        id: 'ignore',
+        text: 'Bỏ mặc nó',
+        onSelect: () => {
+          useGameLog().addLog('Luật sinh tồn tàn khốc, bạn nhắm mắt nhíu mày quay mặt làm ngơ con sếu tội nghiệp.')
+        }
+      }
+    ]
+  },
+  {
+    id: 'hidden_hot_spring',
+    once: true,
+    title: 'Mạch nước nóng thần kỳ',
+    description: 'Bỗng nhiên bạn ngửi thấy mùi lưu huỳnh nhè nhẹ, rẽ qua phiến đá lớn thì thấy một khe nhỏ phun lên dòng nước suối ấm áp.',
+    probability: 0.02,
+    condition: () => useGameStore().currentLocationGroup === 'mine' || useGameStore().currentLocationGroup === 'nature',
+    choices: [
+      {
+        id: 'bathe',
+        text: 'Ngâm mình (Hồi toàn bộ Thể lực)',
+        onSelect: () => {
+          const { restoreStamina } = usePlayerStore()
+          const { addLog, showFloat } = useGameLog()
+          // 999 để coi như max thể lực
+          restoreStamina(999)
+          addLog('Bạn nhảy ùm xuống. Dòng nước nóng đánh tan mọi uể oải, giãn gân cốt. Sinh lực tràn trề!')
+          showFloat('Hồi toàn bộ thể lực', 'success')
+        }
+      },
+      {
+        id: 'wash_face',
+        text: 'Chỉ rửa mặt',
+        onSelect: () => {
+          const { restoreStamina } = usePlayerStore()
+          const { addLog, showFloat } = useGameLog()
+          restoreStamina(25)
+          addLog('Vốc làn nước nóng áp lên mặt thấy sảng khoái phần nào. Bạn không có nhiều thời gian rảnh.')
+          showFloat('Hồi 25 thể lực', 'success')
+        }
+      }
+    ]
+  },
+  {
+    id: 'suspicious_stranger',
+    title: 'Gã lừa đảo ranh ma',
+    description: 'Một gã gầy nhom đội nón sụp che nửa mặt khả nghi thì thầm với bạn: "Người anh em, có muốn mua cẩm thạch giá rẻ không? Rẻ như bèo, 150 G thôi!"',
+    probability: 0.05,
+    condition: () => useGameStore().hour > 12,
+    choices: [
+      {
+        id: 'buy_it',
+        text: 'Mua thử (Tốn 150 G)',
+        onSelect: () => {
+          const { spendMoney } = usePlayerStore()
+          const { addItem } = useInventoryStore()
+          const { addLog, showFloat } = useGameLog()
+          if (spendMoney(150)) {
+            if (Math.random() > 0.6) {
+              addItem('jade', 1)
+              addLog('Trời ạ! Thật sự là Cẩm thạch xịn! Gã đó chắc chắn mờ mắt rồi.')
+              showFloat('Nhận 1 Phỉ thúy', 'success')
+            } else {
+              addLog('Về đến nhà bôi rửa lau chùi thì phát hiện ra... đó chỉ là hòn sỏi nhuộm màu xanh. Bạn đã bị lừa!')
+              showFloat('Mất 150 G', 'danger')
+            }
+          } else {
+            addLog('Hắn thấy bạn moi mãi không đủ 150 G liền chép miệng giật lại cục đá rồi bỏ đi.')
+          }
+        }
+      },
+      {
+        id: 'refuse',
+        text: 'Tuyệt đối là lừa gạt',
+        onSelect: () => {
+          useGameLog().addLog('Bạn thẳng thừng từ chối, gã kia lầu bầu vài câu rồi lẩn vào đám đông.')
+        }
+      }
+    ]
+  },
+  {
+    id: 'fallen_tree',
+    title: 'Cây đổ ngang đường',
+    description: 'Cơn bão đi qua khiến một thân cây lớn bật gốc đổ ngã làm nghẽn trọn lối mòn mà bạn cần đi.',
+    probability: 0.06,
+    condition: () => useGameStore().currentLocationGroup === 'nature',
+    choices: [
+      {
+        id: 'chop_it',
+        text: 'Trổ tài chặt củi (Tốn 25 Thể lực, +Gỗ)',
+        canSelect: () => usePlayerStore().stamina >= 25,
+        onSelect: () => {
+          const { consumeStamina } = usePlayerStore()
+          const { addItem } = useInventoryStore()
+          const { addLog, showFloat } = useGameLog()
+          consumeStamina(25)
+          addItem('wood', 5)
+          addLog('Tuy tốn khá sức lực nhưng đổi lại bạn dọn sạch được đường lớn lại thu hoạch kha khá gỗ.')
+          showFloat('Nhận 5 Gỗ', 'success')
+        }
+      },
+      {
+        id: 'go_around',
+        text: 'Đi đường vòng (-10 Thể lực)',
+        canSelect: () => usePlayerStore().stamina >= 10,
+        onSelect: () => {
+          const { consumeStamina } = usePlayerStore()
+          const { addLog, showFloat } = useGameLog()
+          consumeStamina(10)
+          addLog('Bạn rẽ qua bụi gai mịt mù lội suối hòng vòng qua, bị gai cào xước xát đôi chút.')
+          showFloat('Mất 10 Thể lực', 'warning')
+        }
+      }
+    ]
+  },
+  {
+    id: 'beautiful_flower',
+    title: 'Trân phẩm hoa kỳ ảo',
+    description: 'Ven đường có một nhánh hoa đặc biệt đang khoe sắc thắm, hương thơm nhẹ vương vấn lòng người khiến tâm hồn bạn an nhiên đến lạ.',
+    probability: 0.05,
+    condition: () => useGameStore().season === 'spring',
+    choices: [
+      {
+        id: 'smell',
+        text: 'Ngồi thưởng hoa (+Hồi Thể Lực)',
+        onSelect: () => {
+          const { restoreStamina } = usePlayerStore()
+          const { addLog, showFloat } = useGameLog()
+          restoreStamina(20)
+          addLog('Bạn ngồi xuống nhắm mắt thả lỏng cơ thể. Hương hoa xua tan mọi mệt mỏi trong tích tắc.')
+          showFloat('Hồi 20 thể lực', 'success')
+        }
+      },
+      {
+        id: 'pick',
+        text: 'Bẻ cành mang về (-5 Thể lực)',
+        onSelect: () => {
+          const { consumeStamina } = usePlayerStore()
+          const { addLog, showFloat } = useGameLog()
+          consumeStamina(5)
+          addLog('Vừa đưa tay tới thì gai độc ẩn dưới cuống lá đâm trúng buốt tận óc! Hoa kia rũ cuống héo ngay tức khắc.')
+          showFloat('Mất 5 thể lực', 'danger')
+        }
+      }
+    ]
+  },
+  {
+    id: 'lost_child',
+    title: 'Đứa bé đi lạc',
+    description: 'Đứng tần ngần ở ngã tư là một cô bé tết tóc đuôi sam đang nức nở khóc đòi mẹ.',
+    probability: 0.04,
+    condition: () => useGameStore().currentLocationGroup === 'village_area' && useGameStore().hour < 18,
+    choices: [
+      {
+        id: 'help_find',
+        text: 'Dắt bé đi tìm (Tốn 15 Thể Lực)',
+        canSelect: () => usePlayerStore().stamina >= 15,
+        onSelect: () => {
+          const { consumeStamina, earnMoney } = usePlayerStore()
+          const { addLog, showFloat } = useGameLog()
+          consumeStamina(15)
+          earnMoney(80)
+          addLog('Bạn dắt vòng vòng mới giao được bé khỏe mạnh cho trưởng thôn. Trưởng thôn lệ quyên tặng bạn 80 G.')
+          showFloat('Nhận 80 G', 'success')
+        }
+      },
+      {
+        id: 'give_candy',
+        text: 'Phớt lờ đi ngang',
+        onSelect: () => {
+          useGameLog().addLog('Bạn tặc lưỡi dứt khoát ngoảnh mặt bước tiếp vì hôm nay còn đang bù đầu lắm việc.')
+        }
+      }
+    ]
+  },
+  {
+    id: 'sudden_breeze',
+    title: 'Trận gió độc',
+    description: 'Bầu trời đang bình yên bỗng nổi cơn lốc làm rung chuyển cây lá rào rào, cát bụi cuộn lên mù mịt.',
+    probability: 0.06,
+    condition: () => useGameStore().season === 'autumn' || useGameStore().season === 'winter',
+    choices: [
+      {
+        id: 'cover',
+        text: 'Trùm áo nép mình',
+        onSelect: () => {
+          useGameLog().addLog('Bạn nép mình sau thân cây. Gió qua đi thổi tung mớ tóc rối bù nhưng bạn vẫn an toàn.')
+        }
+      },
+      {
+        id: 'search',
+        text: 'Gồng mình tìm kiếm trong gió (Tốn 15 Thể lực)',
+        canSelect: () => usePlayerStore().stamina >= 15,
+        onSelect: () => {
+          const { consumeStamina, earnMoney } = usePlayerStore()
+          const { addItem } = useInventoryStore()
+          const { addLog, showFloat } = useGameLog()
+          consumeStamina(15)
+          if (Math.random() > 0.5) {
+            addItem('stone', 3)
+            earnMoney(30)
+            addLog('Gió tấp vào mặt ráp nhưng bạn tinh mắt lượm được vài đồng xu bay lơ lửng và quặng đá lạ.')
+            showFloat('Nhận Đá & G', 'success')
+          } else {
+            addLog('Cát chui đầy vào miệng, xót mắt mỏi tay mà chẳng tìm thấy thứ gì ra hồn, đành đi về.')
+            showFloat('Mất 15 Thể lực', 'danger')
+          }
+        }
+      }
+    ]
   }
 ]
 

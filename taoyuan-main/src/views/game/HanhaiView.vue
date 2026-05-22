@@ -42,10 +42,14 @@
           <!-- 固定商品 -->
           <p class="text-xs text-muted mb-0.5">{{ $t('hanhaiView.permanent_goods') }}</p>
           <div
-            v-for="item in HANHAI_FIXED_ITEMS"
+                v-for="item in HANHAI_FIXED_ITEMS"
             :key="item.itemId"
-            class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5 transition-colors mr-1"
+            class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 transition-colors mr-1"
+                role="button"
+                tabindex="0"
             @click="shopModalItem = item"
+                @keydown.enter.prevent="shopModalItem = item"
+                @keydown.space.prevent="shopModalItem = item"
           >
             <div class="flex-1 min-w-0">
               <p class="text-xs truncate">{{ getLocalizedHanhaiItemName(item.name, item.itemId) }}</p>
@@ -65,10 +69,14 @@
           <!-- 轮换商品 -->
           <p class="text-xs text-muted mt-2 mb-0.5">{{ $t('hanhaiView.rotation_goods') }}</p>
           <div
-            v-for="item in hanhaiStore.weeklyRotatingStock"
+                v-for="item in hanhaiStore.weeklyRotatingStock"
             :key="item.itemId"
-            class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5 transition-colors mr-1"
+            class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 transition-colors mr-1"
+                role="button"
+                tabindex="0"
             @click="shopModalItem = item"
+                @keydown.enter.prevent="shopModalItem = item"
+                @keydown.space.prevent="shopModalItem = item"
           >
             <div class="flex-1 min-w-0">
               <p class="text-xs truncate">{{ getLocalizedHanhaiItemName(item.name, item.itemId) }}</p>
@@ -162,10 +170,14 @@
           </p>
           <div class="flex flex-col space-y-1 max-h-60 overflow-y-auto">
             <div
-              v-for="exItem in TRADE_EXCHANGE_ITEMS"
+                v-for="exItem in TRADE_EXCHANGE_ITEMS"
               :key="exItem.itemId"
-              class="flex items-center justify-between border border-accent/10 rounded-xs px-2 py-1.5 cursor-pointer hover:bg-accent/5 transition-colors mr-1"
+              class="flex items-center justify-between border border-accent/10 rounded-xs px-2 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 transition-colors mr-1"
+                role="button"
+                tabindex="0"
               @click="exchangeModalItem = exItem"
+                @keydown.enter.prevent="exchangeModalItem = exItem"
+                @keydown.space.prevent="exchangeModalItem = exItem"
             >
               <div class="flex-1 min-w-0">
                 <p class="text-xs truncate">{{ exItem.name }}</p>
@@ -341,7 +353,7 @@
 
       <!-- 底部统计 -->
       <div class="mt-3 border border-accent/20 rounded-xs p-2">
-        <div class="grid grid-cols-2 gap-x-3 gap-y-0.5">
+        <div class="grid grid-cols-2 gap-x-3 gap-y-0.5" role="list">
           <div class="flex items-center justify-between">
             <span class="text-xs text-muted">Tiền đang có</span>
             <span class="text-xs">{{ playerStore.money }}văn bản</span>
@@ -733,10 +745,14 @@
           <p class="text-xs text-muted mb-2">Chọn các vật phẩm trong ba lô và bán chúng tại quầy hàng</p>
           <div class="flex flex-col space-y-1 max-h-60 overflow-y-auto">
             <div
-              v-for="inv in sellableItems"
+                v-for="inv in sellableItems"
               :key="inv.id + '-' + inv.quality"
-              class="flex items-center justify-between border border-accent/10 rounded-xs px-2 py-1.5 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/10 rounded-xs px-2 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="selectTradeItem(inv)"
+                @keydown.enter.prevent="selectTradeItem(inv)"
+                @keydown.space.prevent="selectTradeItem(inv)"
             >
               <div class="flex-1 min-w-0">
                 <span class="text-xs">{{ inv.name }}</span>

@@ -179,7 +179,7 @@
       <p class="text-xs text-muted mb-2">Đã tìm thấy {{ filteredDiscoveredCount }}/{{ filteredHybrids.length }}</p>
 
       <!-- 图鉴网lưới -->
-      <div class="grid grid-cols-3 md:grid-cols-5 gap-1 max-h-72 overflow-y-auto">
+      <div class="grid grid-cols-3 md:grid-cols-5 gap-1 max-h-72 overflow-y-auto" role="list">
         <div
           v-for="hybrid in filteredHybrids"
           :key="hybrid.id"
@@ -205,7 +205,7 @@
           </div>
           <span class="text-xs text-accent whitespace-nowrap">{{ totalDiscovered }}/{{ HYBRID_DEFS.length }}</span>
         </div>
-        <div class="grid grid-cols-2 gap-x-3 gap-y-0.5">
+        <div class="grid grid-cols-2 gap-x-3 gap-y-0.5" role="list">
           <div v-for="ts in tierStats" :key="ts.tier" class="flex items-center justify-between">
             <span class="text-xs text-muted">{{ ts.label }}</span>
             <span class="text-xs">{{ ts.discovered }}/{{ ts.total }}</span>

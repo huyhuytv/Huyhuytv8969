@@ -12,29 +12,31 @@
     </Button>
 
     <!-- 内容 -->
-    <div class="game-panel flex-1 min-h-0 overflow-y-auto">
+    <main class="game-panel flex-1 min-h-0 overflow-y-auto" role="main" aria-label="Game Screen">
       <router-view v-slot="{ Component }">
         <Transition name="panel-fade" mode="out-in">
           <component :is="Component" :key="$route.path" />
         </Transition>
       </router-view>
-    </div>
+    </main>
 
     <!-- 移动端地图按钮 -->
-    <button class="mobile-map-btn" :aria-label="$t('nav.map')" @click="showMobileMap = true">
-      <Map :size="20" />
-    </button>
-    <button class="mobile-setting-btn" :aria-label="$t('settings.title')" @click="showSettings = true">
-      <SettingsIcon :size="20" />
-    </button>
-    <!-- 虚空箱远程访问按钮 -->
-    <button v-if="warehouseStore.hasVoidChest" class="mobile-void-btn" :aria-label="$t('app.void_chest')" @click="showVoidModal = true">
-      <Archive :size="20" />
-    </button>
-    <!-- 日志按钮 -->
-    <button class="mobile-log-btn" :class="{ 'with-void': warehouseStore.hasVoidChest }" :aria-label="$t('app.log')" @click="showLogModal = true">
-      <History :size="20" />
-    </button>
+    <nav class="mobile-nav-buttons" aria-label="Mobile Navigation">
+      <button class="mobile-map-btn" :aria-label="$t('nav.map')" @click="showMobileMap = true">
+        <Map :size="20" aria-hidden="true" />
+      </button>
+      <button class="mobile-setting-btn" :aria-label="$t('settings.title')" @click="showSettings = true">
+        <SettingsIcon :size="20" aria-hidden="true" />
+      </button>
+      <!-- 虚空箱远程访问按钮 -->
+      <button v-if="warehouseStore.hasVoidChest" class="mobile-void-btn" :aria-label="$t('app.void_chest')" @click="showVoidModal = true">
+        <Archive :size="20" aria-hidden="true" />
+      </button>
+      <!-- 日志按钮 -->
+      <button class="mobile-log-btn" :class="{ 'with-void': warehouseStore.hasVoidChest }" :aria-label="$t('app.log')" @click="showLogModal = true">
+        <History :size="20" aria-hidden="true" />
+      </button>
+    </nav>
 
     <SettingsDialog :open="showSettings" @close="showSettings = false" />
 

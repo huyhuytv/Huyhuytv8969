@@ -14,15 +14,20 @@
       </p>
       <div
         v-if="mainQuestDef"
-        class="flex items-center justify-between border rounded-xs px-3 py-1.5 cursor-pointer"
+        class="flex items-center justify-between border rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40"
         :class="
           questStore.mainQuest?.accepted && questStore.canSubmitMainQuest()
             ? 'border-success/50 bg-success/5 hover:bg-success/10'
             : 'border-accent/20 hover:bg-accent/5'
         "
+        role="button"
+        tabindex="0"
+        :aria-label="`${$i18n.locale === 'vi' ? 'Chương ' : 'Thứ '}${mainQuestDef.chapter}${$i18n.locale === 'vi' ? '' : 'chương'} · ${mainQuestDef.title}. ${mainQuestDef.description}. ${questStore.canSubmitMainQuest() ? $t('quest.accepted_or_not.can_submit') : questStore.mainQuest?.accepted ? $t('quest.accepted_or_not.in_progress') : $t('quest.accepted_or_not.not_accepted')}`"
         @click="questModal = { type: 'main' }"
+        @keydown.enter.prevent="questModal = { type: 'main' }"
+        @keydown.space.prevent="questModal = { type: 'main' }"
       >
-        <div class="min-w-0">
+        <div class="min-w-0" aria-hidden="true">
           <p class="text-xs text-accent truncate">
             {{ $i18n.locale === 'vi' ? 'Chương ' : 'Thứ ' }}{{ mainQuestDef.chapter }}{{ $i18n.locale === 'vi' ? '' : 'chương' }} · {{ mainQuestDef.title }}
           </p>
@@ -31,6 +36,7 @@
         <span
           class="text-xs whitespace-nowrap ml-2"
           :class="questStore.canSubmitMainQuest() ? 'text-success' : questStore.mainQuest?.accepted ? 'text-accent' : 'text-muted'"
+          aria-hidden="true"
         >
           {{ questStore.canSubmitMainQuest() ? $t('quest.accepted_or_not.can_submit') : questStore.mainQuest?.accepted ? $t('quest.accepted_or_not.in_progress') : $t('quest.accepted_or_not.not_accepted') }}
         </span>
@@ -51,15 +57,20 @@
         <Calendar :size="24" />
         <p class="text-xs mt-1">{{ $t('quest.no_daily_commission') }}</p>
       </div>
-      <div v-else class="flex flex-col space-y-1.5">
+      <div v-else class="flex flex-col space-y-1.5" role="list">
         <div
           v-for="quest in questStore.boardQuests"
           :key="quest.id"
-          class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+          class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5 focus:outline-none focus:ring-2 focus:ring-accent/40"
+          role="button"
+          tabindex="0"
+          :aria-label="`${quest.description}. ${$t('quest.rewards')}: ${quest.moneyReward}${$t('quest.money_unit_xu')}`"
           @click="questModal = { type: 'board', questId: quest.id }"
+          @keydown.enter.prevent="questModal = { type: 'board', questId: quest.id }"
+          @keydown.space.prevent="questModal = { type: 'board', questId: quest.id }"
         >
-          <p class="text-xs truncate min-w-0">{{ quest.description }}</p>
-          <span class="text-xs text-accent whitespace-nowrap ml-2">{{ quest.moneyReward }}{{ $t('quest.money_unit_xu') }}</span>
+          <p class="text-xs truncate min-w-0" aria-hidden="true">{{ quest.description }}</p>
+          <span class="text-xs text-accent whitespace-nowrap ml-2" aria-hidden="true">{{ quest.moneyReward }}{{ $t('quest.money_unit_xu') }}</span>
         </div>
       </div>
     </div>
@@ -71,13 +82,18 @@
         {{ $t('quest.special_order') }}
       </p>
       <div
-        class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+        class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5 focus:outline-none focus:ring-2 focus:ring-accent/40"
+        role="button"
+        tabindex="0"
+        :aria-label="`${questStore.specialOrder.description}. ${$t('quest.rewards')}: ${questStore.specialOrder.moneyReward}${$t('quest.money_unit_xu')}`"
         @click="questModal = { type: 'special' }"
+        @keydown.enter.prevent="questModal = { type: 'special' }"
+        @keydown.space.prevent="questModal = { type: 'special' }"
       >
-        <div class="min-w-0">
+        <div class="min-w-0" aria-hidden="true">
           <p class="text-xs truncate">{{ questStore.specialOrder.description }}</p>
         </div>
-        <span class="text-xs text-accent whitespace-nowrap ml-2">{{ questStore.specialOrder.moneyReward }}{{ $t('quest.money_unit_xu') }}</span>
+        <span class="text-xs text-accent whitespace-nowrap ml-2" aria-hidden="true">{{ questStore.specialOrder.moneyReward }}{{ $t('quest.money_unit_xu') }}</span>
       </div>
     </div>
 
@@ -91,11 +107,11 @@
         <Clock :size="24" />
         <p class="text-xs mt-1">{{ $t('quest.no_active_quests') }}</p>
       </div>
-      <div v-else class="flex flex-col space-y-1.5">
+      <div v-else class="flex flex-col space-y-1.5" role="list">
         <div
           v-for="quest in questStore.activeQuests"
           :key="quest.id"
-          class="border rounded-xs px-3 py-1.5 cursor-pointer"
+          class="border rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40"
           :class="
             canSubmit(quest)
               ? 'border-success/50 bg-success/5 hover:bg-success/10'
@@ -103,15 +119,20 @@
                 ? 'border-accent/30 hover:bg-accent/5'
                 : 'border-accent/20 hover:bg-accent/5'
           "
+          role="button"
+          tabindex="0"
+          :aria-label="`${quest.description}. ${canSubmit(quest) ? $t('quest.accepted_or_not.can_submit') : $t('quest.days_remaining', { days: quest.daysRemaining })}. ${quest.type !== 'delivery' ? getEffectiveProgress(quest) + '/' + quest.targetQuantity : $t('quest.in_bag') + ' ' + inventoryStore.getItemCount(quest.targetItemId) + '/' + quest.targetQuantity}`"
           @click="questModal = { type: 'active', questId: quest.id }"
+          @keydown.enter.prevent="questModal = { type: 'active', questId: quest.id }"
+          @keydown.space.prevent="questModal = { type: 'active', questId: quest.id }"
         >
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between" aria-hidden="true">
             <p class="text-xs truncate min-w-0">{{ quest.description }}</p>
             <span class="text-xs whitespace-nowrap ml-2" :class="canSubmit(quest) ? 'text-success' : 'text-muted'">
               {{ canSubmit(quest) ? $t('quest.accepted_or_not.can_submit') : $t('quest.days_remaining', { days: quest.daysRemaining }) }}
             </span>
           </div>
-          <div v-if="quest.type !== 'delivery'" class="mt-1 flex items-center space-x-2">
+          <div v-if="quest.type !== 'delivery'" class="mt-1 flex items-center space-x-2" aria-hidden="true">
             <div class="flex-1 h-1 bg-bg rounded-xs border border-accent/10">
               <div
                 class="h-full rounded-xs bg-accent transition-all"
@@ -120,7 +141,7 @@
             </div>
             <span class="text-xs text-muted">{{ getEffectiveProgress(quest) }}/{{ quest.targetQuantity }}</span>
           </div>
-          <div v-else class="mt-0.5">
+          <div v-else class="mt-0.5" aria-hidden="true">
             <span class="text-xs text-muted">{{ $t('quest.in_bag') }} {{ inventoryStore.getItemCount(quest.targetItemId) }}/{{ quest.targetQuantity }}</span>
           </div>
         </div>

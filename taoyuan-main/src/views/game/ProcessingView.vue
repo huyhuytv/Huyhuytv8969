@@ -58,8 +58,12 @@
         <div v-for="group in machineGroups" :key="group.machineType" class="border border-accent/10 rounded-xs">
           <!-- 分组标题（可折叠） -->
           <div
-            class="flex items-center justify-between px-2 py-1.5 cursor-pointer hover:bg-accent/5 select-none"
+                class="flex items-center justify-between px-2 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 select-none"
+                role="button"
+                tabindex="0"
             @click="toggleGroup(group.machineType)"
+                @keydown.enter.prevent="toggleGroup(group.machineType)"
+                @keydown.space.prevent="toggleGroup(group.machineType)"
           >
             <div class="flex items-center space-x-1">
               <span class="text-xs text-accent">{{ group.name }}</span>
@@ -184,10 +188,14 @@
         <p class="text-xs text-muted mb-1">{{ cat.label }}</p>
         <div class="flex flex-col space-y-1 max-h-60 overflow-y-auto">
           <div
-            v-for="item in cat.items"
+                v-for="item in cat.items"
             :key="item.id"
-            class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5 mr-1"
+            class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 mr-1"
+                role="button"
+                tabindex="0"
             @click="openCraftModal(item)"
+                @keydown.enter.prevent="openCraftModal(item)"
+                @keydown.space.prevent="openCraftModal(item)"
           >
             <div class="text-xs truncate mr-2">
               {{ item.name }}

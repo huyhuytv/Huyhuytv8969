@@ -21,23 +21,28 @@
       <span class="text-xs text-muted whitespace-nowrap ml-2">{{ $t('tool_upgrade.days_remaining', { days: inventoryStore.pendingUpgrade.daysRemaining }) }}</span>
     </div>
 
-    <div class="flex flex-col space-y-1.5">
+    <div class="flex flex-col space-y-1.5" role="list">
       <div
         v-for="tool in inventoryStore.tools"
         :key="tool.type"
-        class="flex items-center justify-between border rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+        class="flex items-center justify-between border rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5 focus:outline-none focus:ring-2 focus:ring-accent/40"
         :class="isUpgrading(tool.type) ? 'border-accent/30' : 'border-accent/20'"
+        role="button"
+        tabindex="0"
+        :aria-label="`${$t('tool.' + tool.type)} ${$t('tier.' + tool.tier)}. ${isUpgrading(tool.type) ? $t('tool_upgrade.upgrading') : (getUpgradeCost(tool.type, tool.tier) ? '→ ' + $t('tier.' + getUpgradeCost(tool.type, tool.tier)!.toTier) : '')}`"
         @click="selectedTool = tool.type"
+        @keydown.enter.prevent="selectedTool = tool.type"
+        @keydown.space.prevent="selectedTool = tool.type"
       >
-        <div class="min-w-0">
+        <div class="min-w-0" aria-hidden="true">
           <span class="text-sm" :class="isUpgrading(tool.type) ? 'text-accent' : ''">{{ $t('tool.' + tool.type) }}</span>
           <p class="text-xs text-muted">{{ $t('tier.' + tool.tier) }}</p>
         </div>
-        <span v-if="isUpgrading(tool.type)" class="text-xs text-accent whitespace-nowrap ml-2">{{ $t('tool_upgrade.upgrading') }}</span>
-        <span v-else-if="getUpgradeCost(tool.type, tool.tier)" class="text-xs text-muted whitespace-nowrap ml-2">
+        <span v-if="isUpgrading(tool.type)" class="text-xs text-accent whitespace-nowrap ml-2" aria-hidden="true">{{ $t('tool_upgrade.upgrading') }}</span>
+        <span v-else-if="getUpgradeCost(tool.type, tool.tier)" class="text-xs text-muted whitespace-nowrap ml-2" aria-hidden="true">
           → {{ $t('tier.' + getUpgradeCost(tool.type, tool.tier)!.toTier) }}
         </span>
-        <CircleCheck v-else :size="14" class="text-success shrink-0 ml-2" />
+        <CircleCheck v-else :size="14" class="text-success shrink-0 ml-2" aria-hidden="true" />
       </div>
     </div>
 

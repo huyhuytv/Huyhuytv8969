@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <main aria-labelledby="farm-title">
+    <h1 id="farm-title" class="sr-only">{{ $i18n.locale === 'vi' ? 'Nông trại' : 'Trang trại' }}</h1>
     <!-- 标签切换 -->
     <div class="flex space-x-1.5 mb-3">
       <Button
@@ -21,12 +22,12 @@
     </div>
 
     <!-- 田庄标签 -->
-    <div v-if="farmTab === 'field'">
+    <section v-if="farmTab === 'field'" aria-labelledby="field-title">
       <div class="flex items-center justify-between mb-1">
-        <div class="flex items-center space-x-1.5 text-sm text-accent">
-          <Sprout :size="14" />
+        <h2 id="field-title" class="flex items-center space-x-1.5 text-sm text-accent">
+          <Sprout :size="14" aria-hidden="true" />
           <span>{{ $t('farm.field') }} ({{ farmStore.farmSize }}×{{ farmStore.farmSize }})</span>
-        </div>
+        </h2>
         <div class="text-xs text-muted flex space-x-3">
           <span v-if="farmStore.scarecrows > 0" class="inline-flex items-center space-x-0.5">
             <Bird :size="12" />
@@ -54,8 +55,12 @@
       <!-- 田庄特殊功能 -->
       <div v-if="gameStore.farmMapType === 'riverland' && gameStore.creekCatch.length > 0" class="mb-3">
         <div
-          class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
           @click="handleCollectCreekCatch"
+                @keydown.enter.prevent="handleCollectCreekCatch"
+                @keydown.space.prevent="handleCollectCreekCatch"
         >
           <div>
             <p class="text-xs text-accent">{{ $t('farm.creek_catch') }}</p>
@@ -67,8 +72,12 @@
 
       <div v-if="gameStore.farmMapType === 'hilltop' && gameStore.surfaceOrePatch" class="mb-3">
         <div
-          class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
           @click="handleMineSurfaceOre"
+                @keydown.enter.prevent="handleMineSurfaceOre"
+                @keydown.space.prevent="handleMineSurfaceOre"
         >
           <div>
             <p class="text-xs text-accent">{{ $t('farm.surface_ore') }}</p>
@@ -90,7 +99,7 @@
               <X :size="14" />
             </button>
             <p class="text-accent text-sm mb-2">{{ $t('farm.batch_action') }}</p>
-            <div class="flex flex-col space-y-1.5">
+            <div class="flex flex-col space-y-1.5" role="list">
               <button class="btn text-xs w-full justify-between" :disabled="unwateredCount === 0" @click="doBatchAction('water')">
                 <span class="flex items-center space-x-1">
                   <Droplets :size="12" />
@@ -468,7 +477,7 @@
 
       <!-- 图例与提示 -->
       <div class="mt-2 border border-accent/10 rounded-xs p-2">
-        <div class="grid grid-cols-4 md:space-x-3 md:flex md:flex-wrap text-xs text-muted">
+        <div class="grid grid-cols-4 md:space-x-3 md:flex md:flex-wrap text-xs text-muted" role="list">
           <span v-for="(item, i) in PLOT_LEGENDS" :key="i">
             <component :is="item.icon" :size="10" :class="[item.color, 'inline']" />
             {{ item.label }}
@@ -483,8 +492,12 @@
 
       <!-- hộp vận chuyển入口 -->
       <div
-        class="mt-3 flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+                class="mt-3 flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
         @click="showShippingBox = true"
+                @keydown.enter.prevent="showShippingBox = true"
+                @keydown.space.prevent="showShippingBox = true"
       >
         <div class="flex items-center space-x-1.5">
           <Package :size="14" class="text-accent" />
@@ -520,10 +533,14 @@
               <p class="text-xs text-muted mb-1">{{ $i18n.locale === 'vi' ? 'Đã cho vào' : 'đã được đặt' }}</p>
               <div class="flex flex-col space-y-1 max-h-36 overflow-y-auto">
                 <div
-                  v-for="(entry, idx) in shopStore.shippingBox"
+                v-for="(entry, idx) in shopStore.shippingBox"
                   :key="idx"
-                  class="flex items-center justify-between border border-accent/20 rounded-xs px-2 py-1 cursor-pointer hover:bg-accent/5"
+                  class="flex items-center justify-between border border-accent/20 rounded-xs px-2 py-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
                   @click="handleRemoveFromBox(entry.itemId, entry.quantity, entry.quality)"
+                @keydown.enter.prevent="handleRemoveFromBox(entry.itemId, entry.quantity, entry.quality)"
+                @keydown.space.prevent="handleRemoveFromBox(entry.itemId, entry.quantity, entry.quality)"
                 >
                   <div class="min-w-0">
                     <span
@@ -590,9 +607,13 @@
 
       <!-- nhà kính入口 -->
       <div
-        v-if="showGreenhouse"
-        class="mt-3 flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+                v-if="showGreenhouse"
+        class="mt-3 flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
         @click="showGreenhouseModal = true"
+                @keydown.enter.prevent="showGreenhouseModal = true"
+                @keydown.space.prevent="showGreenhouseModal = true"
       >
         <div class="flex items-center space-x-1.5">
           <Warehouse :size="14" class="text-accent" />
@@ -601,17 +622,17 @@
         </div>
         <span class="text-xs text-muted">{{ farmStore.greenhousePlots.length }} {{ $i18n.locale === 'vi' ? 'ô đất' : 'mảnh đất' }}</span>
       </div>
-    </div>
+    </section>
 
     <!-- 林木标签 -->
     <div v-if="farmTab === 'tree'">
       <!-- 果树区 -->
-      <div class="border border-accent/20 rounded-xs p-3">
+      <section class="border border-accent/20 rounded-xs p-3" aria-labelledby="fruit-tree-title">
         <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center space-x-1.5 text-sm text-accent">
-            <TreeDeciduous :size="14" />
+          <h2 id="fruit-tree-title" class="flex items-center space-x-1.5 text-sm text-accent">
+            <TreeDeciduous :size="14" aria-hidden="true" />
             <span>{{ $t('farm.fruit_trees') }}</span>
-          </div>
+          </h2>
           <span class="text-xs text-muted">{{ farmStore.fruitTrees.length }}/{{ MAX_FRUIT_TREES }}</span>
         </div>
         <div v-if="farmStore.fruitTrees.length > 0" class="flex flex-col space-y-1.5 mb-2">
@@ -657,7 +678,7 @@
             {{ $t('farm.plant_sapling', { name: s.name, count: s.count }) }}
           </Button>
         </div>
-      </div>
+      </section>
 
       <!-- 砍cắt giảm果树确认弹窗 -->
       <Transition name="panel-fade">
@@ -721,12 +742,12 @@
       </Transition>
 
       <!-- cây dại区 -->
-      <div class="mt-3 border border-accent/20 rounded-xs p-3">
+      <section class="mt-3 border border-accent/20 rounded-xs p-3" aria-labelledby="wild-tree-title">
         <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center space-x-1.5 text-sm text-accent">
-            <TreePine :size="14" />
+          <h2 id="wild-tree-title" class="flex items-center space-x-1.5 text-sm text-accent">
+            <TreePine :size="14" aria-hidden="true" />
             <span>{{ $i18n.locale === 'vi' ? 'Cây rừng' : 'cây dại' }}</span>
-          </div>
+          </h2>
           <span class="text-xs text-muted">{{ farmStore.wildTrees.length }}/{{ MAX_WILD_TREES }}</span>
         </div>
         <div v-if="farmStore.wildTrees.length > 0" class="flex flex-col space-y-1.5 mb-2">
@@ -809,7 +830,7 @@
             {{ $i18n.locale === 'vi' ? 'Trồng ' : 'loài' }}{{ s.name }} (×{{ s.count }})
           </Button>
         </div>
-      </div>
+      </section>
     </div>
 
     <!-- nhà kính弹窗 -->
@@ -1001,7 +1022,7 @@
           </div>
 
           <!-- 操作区 -->
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <!-- đã cày → trồng cây（所有loài子) -->
             <div v-if="activeGhPlot.state === 'tilled' && allSeeds.length > 0" class="border border-accent/10 rounded-xs p-2">
               <p class="text-xs text-muted mb-1">{{ $i18n.locale === 'vi' ? 'Trồng' : 'trồng cây' }}</p>
@@ -1050,7 +1071,7 @@
         </div>
       </div>
     </Transition>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

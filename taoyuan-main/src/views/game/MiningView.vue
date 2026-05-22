@@ -72,8 +72,12 @@
 
     <!-- 进入Của tôi -->
     <div
-      class="border border-accent/20 rounded-xs px-3 py-2 mb-4 flex items-center justify-between cursor-pointer hover:bg-accent/5"
+                class="border border-accent/20 rounded-xs px-3 py-2 mb-4 flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
       @click="hasElevator ? (showElevatorModal = true) : handleEnterMine(undefined)"
+                @keydown.enter.prevent="hasElevator ? (showElevatorModal = true) : handleEnterMine(undefined)"
+                @keydown.space.prevent="hasElevator ? (showElevatorModal = true) : handleEnterMine(undefined)"
     >
       <div class="flex items-center space-x-1.5">
         <Pickaxe :size="14" class="text-accent" />
@@ -116,7 +120,7 @@
             <Button class="py-0 px-1" :icon="X" :icon-size="12" @click="showMapModal = false" />
           </div>
           <p class="text-xs text-muted mb-2">Điểm an toàn:{{ miningStore.safePointFloor > 0 ? `Không.${miningStore.safePointFloor}lớp` : 'lối vào' }}</p>
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <div
               v-for="zone in mineZones"
               :key="zone.id"
@@ -166,8 +170,12 @@
 
           <!-- 进入Của tôi(前线) -->
           <div
-            class="flex items-center justify-between border border-accent/30 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5 mb-2"
+                class="flex items-center justify-between border border-accent/30 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 mb-2"
+                role="button"
+                tabindex="0"
             @click="handleEnterMine(undefined)"
+                @keydown.enter.prevent="handleEnterMine(undefined)"
+                @keydown.space.prevent="handleEnterMine(undefined)"
           >
             <span class="text-xs text-accent">Vào mỏ</span>
             <span class="text-xs text-muted">Không.{{ miningStore.safePointFloor + 1 }}lớp</span>
@@ -188,8 +196,12 @@
           <!-- 骷髅矿穴 -->
           <div v-if="miningStore.isSkullCavernUnlocked()">
             <div
-              class="flex items-center justify-between border border-danger/30 rounded-xs px-3 py-1.5 mb-2 cursor-pointer hover:bg-danger/5"
+                class="flex items-center justify-between border border-danger/30 rounded-xs px-3 py-1.5 mb-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-danger/5"
+                role="button"
+                tabindex="0"
               @click="handleEnterSkullCavern(undefined)"
+                @keydown.enter.prevent="handleEnterSkullCavern(undefined)"
+                @keydown.space.prevent="handleEnterSkullCavern(undefined)"
             >
               <span class="text-xs text-danger">
                 <Skull :size="12" class="inline" />
@@ -257,7 +269,7 @@
 
           <!-- 6×6 格子 -->
           <div class="flex justify-center mb-3">
-            <div class="grid grid-cols-6 gap-1" style="max-width: 264px">
+            <div class="grid grid-cols-6 gap-1" style="max-width: 264px" role="list">
               <button
                 v-for="tile in miningStore.floorGrid"
                 :key="tile.index"
@@ -275,9 +287,13 @@
           <div class="flex flex-col space-y-1 mb-3">
             <div v-for="bombItem in availableBombs" :key="bombItem.id">
               <div
-                class="flex items-center justify-between border rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
                 :class="bombModeId === bombItem.id ? 'border-accent text-accent' : 'border-accent/20'"
                 @click="toggleBombMode(bombItem.id)"
+                @keydown.enter.prevent="toggleBombMode(bombItem.id)"
+                @keydown.space.prevent="toggleBombMode(bombItem.id)"
               >
                 <span class="text-xs">
                   <Zap :size="12" class="inline" />
@@ -287,9 +303,13 @@
               </div>
             </div>
             <div
-              v-if="hasMonsterLure"
-              class="flex items-center justify-between border border-danger/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-danger/5"
+                v-if="hasMonsterLure"
+              class="flex items-center justify-between border border-danger/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-danger/5"
+                role="button"
+                tabindex="0"
               @click="handleUseMonsterLure"
+                @keydown.enter.prevent="handleUseMonsterLure"
+                @keydown.space.prevent="handleUseMonsterLure"
             >
               <span class="text-xs text-danger">
                 <Skull :size="12" class="inline" />
@@ -298,9 +318,13 @@
               <span class="text-xs text-muted">&times;{{ inventoryStore.getItemCount('monster_lure') }}</span>
             </div>
             <div
-              v-if="availableCombatItems.length > 0"
-              class="flex items-center justify-between border border-success/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-success/5"
+                v-if="availableCombatItems.length > 0"
+              class="flex items-center justify-between border border-success/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-success/5"
+                role="button"
+                tabindex="0"
               @click="showCombatItems = true"
+                @keydown.enter.prevent="showCombatItems = true"
+                @keydown.space.prevent="showCombatItems = true"
             >
               <span class="text-xs text-success">
                 <Backpack :size="12" class="inline" />
@@ -321,8 +345,12 @@
               <span v-if="!miningStore.stairsUsable" class="text-xs text-muted">Không thể dùng thang</span>
             </div>
             <div
-              class="flex items-center justify-between border border-danger/30 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-danger/5"
+                class="flex items-center justify-between border border-danger/30 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-danger/5"
+                role="button"
+                tabindex="0"
               @click="showLeaveConfirm = true"
+                @keydown.enter.prevent="showLeaveConfirm = true"
+                @keydown.space.prevent="showLeaveConfirm = true"
             >
               <span class="text-xs text-danger">
                 <LogOut :size="12" class="inline" />
@@ -351,7 +379,7 @@
           </div>
 
           <!-- 玩家 vs 怪物 -->
-          <div class="grid grid-cols-[1fr_auto_1fr] gap-1.5 mb-3 items-center">
+          <div class="grid grid-cols-[1fr_auto_1fr] gap-1.5 mb-3 items-center" role="list">
             <!-- 玩家 -->
             <div class="border border-accent/10 rounded-xs p-2 relative" :class="playerAnim">
               <p class="text-xs text-center mb-1.5 truncate">bạn</p>
@@ -403,7 +431,7 @@
           <!-- chiến đấu斗操作 -->
           <div class="mb-3 space-y-1">
             <!-- tấn công / 防御 / 逃跑 -->
-            <div class="grid grid-cols-3 gap-1">
+            <div class="grid grid-cols-3 gap-1" role="list">
               <div
                 class="flex flex-col items-center border border-accent/20 rounded-xs py-1.5"
                 :class="combatAnimLock ? 'opacity-50' : 'cursor-pointer hover:bg-accent/5'"
@@ -444,9 +472,13 @@
             </div>
             <!-- sử dụngđạo cụ -->
             <div
-              v-if="availableCombatItems.length > 0"
-              class="flex items-center justify-between border border-success/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-success/5"
+                v-if="availableCombatItems.length > 0"
+              class="flex items-center justify-between border border-success/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-success/5"
+                role="button"
+                tabindex="0"
               @click="showCombatItems = true"
+                @keydown.enter.prevent="showCombatItems = true"
+                @keydown.space.prevent="showCombatItems = true"
             >
               <span class="text-xs text-success">
                 <Backpack :size="12" class="inline" />
@@ -456,9 +488,13 @@
             </div>
             <!-- 切换Sơ đồ thiết bị -->
             <div
-              v-if="inventoryStore.equipmentPresets.length > 0"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                v-if="inventoryStore.equipmentPresets.length > 0"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="showPresetListModal = true"
+                @keydown.enter.prevent="showPresetListModal = true"
+                @keydown.space.prevent="showPresetListModal = true"
             >
               <span class="text-xs text-accent">
                 <BookMarked :size="12" class="inline" />
@@ -501,10 +537,14 @@
           </div>
           <div class="flex flex-col space-y-1 max-h-48 overflow-y-auto">
             <div
-              v-for="item in availableCombatItems"
+                v-for="item in availableCombatItems"
               :key="item.itemId"
-              class="flex items-center justify-between border border-success/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-success/5"
+              class="flex items-center justify-between border border-success/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-success/5"
+                role="button"
+                tabindex="0"
               @click="handlePendingItem(item.itemId)"
+                @keydown.enter.prevent="handlePendingItem(item.itemId)"
+                @keydown.space.prevent="handlePendingItem(item.itemId)"
             >
               <div class="flex flex-col">
                 <span class="text-xs">{{ item.name }}</span>
@@ -632,7 +672,7 @@
                 <p class="text-xs text-accent truncate">{{ preset.name }}</p>
                 <span v-if="inventoryStore.activePresetId === preset.id" class="text-[10px] text-success shrink-0 ml-1">Đang sử dụng</span>
               </div>
-              <div class="grid grid-cols-2 gap-1">
+              <div class="grid grid-cols-2 gap-1" role="list">
                 <Button
                   class="py-0 px-1.5 text-[10px]"
                   :disabled="inventoryStore.activePresetId === preset.id"

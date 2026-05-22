@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <main aria-labelledby="npc-page-title">
     <!-- Tab 切换按钮 -->
-    <h3 class="text-accent text-sm mb-3">{{ $i18n.locale === 'vi' ? 'Đào Nguyên Hương' : 'Làng Đào Viên' }}</h3>
+    <h1 id="npc-page-title" class="text-accent text-sm mb-3">{{ $i18n.locale === 'vi' ? 'Đào Nguyên Hương' : 'Làng Đào Viên' }}</h1>
 
     <div class="flex space-x-1.5 mb-3">
       <Button
@@ -23,116 +23,132 @@
     </div>
 
     <!-- dân làng Tab -->
-    <div v-if="activeTab === 'villager'">
+    <section v-if="activeTab === 'villager'" aria-labelledby="tab-villager-title">
+      <h2 id="tab-villager-title" class="sr-only">{{ $i18n.locale === 'vi' ? 'Dân làng' : 'dân làng' }}</h2>
       <p v-if="tutorialHint" class="text-[10px] text-muted/50 mb-2">{{ tutorialHint }}</p>
 
       <!-- NPC 网格：移动端紧凑,桌面端详细 -->
-      <div class="grid grid-cols-4 md:grid-cols-3 gap-1.5 md:gap-2">
+      <div class="grid grid-cols-4 md:grid-cols-3 gap-1.5 md:gap-2" role="list">
         <div
           v-for="npc in NPCS"
           :key="npc.id"
-          class="border border-accent/20 rounded-xs p-1.5 md:p-2 transition-colors"
+          class="border border-accent/20 rounded-xs p-1.5 md:p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-accent/40"
           :class="[npcAvailable(npc.id) ? 'cursor-pointer hover:bg-accent/5' : 'opacity-50', 'text-center md:text-left']"
+          role="button"
+          tabindex="0"
+          :aria-label="getNpcAriaLabel(npc)"
           @click="handleSelectNpc(npc.id)"
+          @keydown.enter.prevent="handleSelectNpc(npc.id)"
+          @keydown.space.prevent="handleSelectNpc(npc.id)"
         >
-          <!-- 移动端：紧凑布局 -->
-          <div class="md:hidden">
-            <p class="text-xs truncate" :class="levelColor(npcStore.getFriendshipLevel(npc.id))">
-              {{ npc.name }}
-            </p>
-            <p class="text-[10px] flex items-center justify-center" :class="heartCount(npc.id) > 0 ? 'text-danger' : 'text-muted/30'">
-              {{ heartCount(npc.id) }}
-              <Heart :size="10" :fill="heartCount(npc.id) > 0 ? 'currentColor' : 'none'" />
-              <span class="text-muted/50 ml-0.5">{{ npcStore.getNpcState(npc.id)?.friendship ?? 0 }}</span>
-            </p>
-            <div class="flex items-center justify-center space-x-1 mt-0.5 min-h-3.5">
-              <MessageCircle :size="10" :class="npcStore.getNpcState(npc.id)?.talkedToday ? 'text-muted/20' : 'text-success'" />
-              <Gift :size="10" :class="npcGiftClass(npc.id)" />
-              <Heart v-if="npcStore.getNpcState(npc.id)?.married" :size="10" class="text-danger" />
-              <Heart v-else-if="npcStore.getNpcState(npc.id)?.dating" :size="10" class="text-danger/50" />
-              <Heart v-else-if="npcStore.getNpcState(npc.id)?.zhiji" :size="10" class="text-accent" />
-              <Heart v-else-if="npc.marriageable" :size="10" class="text-muted/30" />
-              <Cake v-if="npcStore.isBirthday(npc.id)" :size="10" class="text-danger" />
-            </div>
-          </div>
-          <!-- 桌面端：显示更多信息 -->
-          <div class="hidden md:block">
-            <div class="flex items-center justify-between">
-              <span class="text-xs" :class="levelColor(npcStore.getFriendshipLevel(npc.id))">
-                {{ npc.name }}
-                <span v-if="npcStore.getNpcState(npc.id)?.married" class="text-danger text-[10px] ml-0.5">{{ $i18n.locale === 'vi' ? '[Bạn đời]' : '[bạn đồng hành]' }}</span>
-                <span v-else-if="npcStore.getNpcState(npc.id)?.dating" class="text-danger/70 text-[10px] ml-0.5">{{ $i18n.locale === 'vi' ? '[Đang hẹn hò]' : '[Hẹn hò]' }}</span>
-                <span v-else-if="npcStore.getNpcState(npc.id)?.zhiji" class="text-accent text-[10px] ml-0.5">{{ $i18n.locale === 'vi' ? '[Tri kỷ]' : '[người bạn tâm giao]' }}</span>
-              </span>
-              <div class="flex items-center space-x-1">
-                <MessageCircle :size="10" :class="npcStore.getNpcState(npc.id)?.talkedToday ? 'text-muted/20' : 'text-success'" />
-                <Gift :size="10" :class="npcGiftClass(npc.id)" />
-                <span v-if="npc.marriageable" class="text-danger/50">
-                  <Heart :size="10" />
-                </span>
-                <Cake v-if="npcStore.isBirthday(npc.id)" :size="10" class="text-danger" />
-              </div>
-            </div>
-            <p class="text-[10px] text-muted truncate">{{ npc.role }}</p>
-            <div class="flex items-center justify-between mt-0.5">
-              <div class="flex items-center space-x-px">
-                <Heart
-                  v-for="h in 10"
-                  :key="h"
-                  :size="10"
-                  class="flex-shrink-0"
-                  :class="(npcStore.getNpcState(npc.id)?.friendship ?? 0) >= h * 250 ? 'text-danger' : 'text-muted/30'"
-                  :fill="(npcStore.getNpcState(npc.id)?.friendship ?? 0) >= h * 250 ? 'currentColor' : 'none'"
-                />
-              </div>
-              <span class="text-[10px] text-muted/50">{{ npcStore.getNpcState(npc.id)?.friendship ?? 0 }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tiên Tab -->
-    <div v-if="activeTab === 'spirit'">
-      <!-- 已显现的Tiên -->
-      <template v-if="revealedHiddenNpcs.length > 0">
-        <div class="grid grid-cols-4 md:grid-cols-3 gap-1.5 md:gap-2">
-          <div
-            v-for="npc in revealedHiddenNpcs"
-            :key="npc.id"
-            class="border border-accent/20 rounded-xs p-1.5 md:p-2 cursor-pointer hover:bg-accent/5 text-center md:text-left"
-            @click="selectedHiddenNpc = npc.id"
-          >
+          <div aria-hidden="true" class="h-full">
             <!-- 移动端：紧凑布局 -->
             <div class="md:hidden">
-              <p class="text-xs text-accent truncate">{{ npc.name }}</p>
-              <p
-                class="text-[10px] flex items-center justify-center"
-                :class="hiddenHeartCount(npc.id) > 0 ? 'text-accent' : 'text-muted/30'"
-              >
-                {{ hiddenHeartCount(npc.id) }}
-                <Diamond :size="10" :fill="hiddenHeartCount(npc.id) > 0 ? 'currentColor' : 'none'" />
-                <span class="text-muted/50 ml-0.5">{{ hiddenNpcStore.getHiddenNpcState(npc.id)?.affinity ?? 0 }}</span>
+              <p class="text-xs truncate" :class="levelColor(npcStore.getFriendshipLevel(npc.id))">
+                {{ npc.name }}
               </p>
+              <p class="text-[10px] flex items-center justify-center" :class="heartCount(npc.id) > 0 ? 'text-danger' : 'text-muted/30'">
+                {{ heartCount(npc.id) }}
+                <Heart :size="10" :fill="heartCount(npc.id) > 0 ? 'currentColor' : 'none'" />
+                <span class="text-muted/50 ml-0.5">{{ npcStore.getNpcState(npc.id)?.friendship ?? 0 }}</span>
+              </p>
+              <div class="flex items-center justify-center space-x-1 mt-0.5 min-h-3.5">
+                <MessageCircle :size="10" :class="npcStore.getNpcState(npc.id)?.talkedToday ? 'text-muted/20' : 'text-success'" />
+                <Gift :size="10" :class="npcGiftClass(npc.id)" />
+                <Heart v-if="npcStore.getNpcState(npc.id)?.married" :size="10" class="text-danger" />
+                <Heart v-else-if="npcStore.getNpcState(npc.id)?.dating" :size="10" class="text-danger/50" />
+                <Heart v-else-if="npcStore.getNpcState(npc.id)?.zhiji" :size="10" class="text-accent" />
+                <Heart v-else-if="npc.marriageable" :size="10" class="text-muted/30" />
+                <Cake v-if="npcStore.isBirthday(npc.id)" :size="10" class="text-danger" />
+              </div>
             </div>
             <!-- 桌面端：显示更多信息 -->
             <div class="hidden md:block">
               <div class="flex items-center justify-between">
-                <span class="text-xs text-accent">{{ npc.name }}</span>
+                <span class="text-xs" :class="levelColor(npcStore.getFriendshipLevel(npc.id))">
+                  {{ npc.name }}
+                  <span v-if="npcStore.getNpcState(npc.id)?.married" class="text-danger text-[10px] ml-0.5">{{ $i18n.locale === 'vi' ? '[Bạn đời]' : '[bạn đồng hành]' }}</span>
+                  <span v-else-if="npcStore.getNpcState(npc.id)?.dating" class="text-danger/70 text-[10px] ml-0.5">{{ $i18n.locale === 'vi' ? '[Đang hẹn hò]' : '[Hẹn hò]' }}</span>
+                  <span v-else-if="npcStore.getNpcState(npc.id)?.zhiji" class="text-accent text-[10px] ml-0.5">{{ $i18n.locale === 'vi' ? '[Tri kỷ]' : '[người bạn tâm giao]' }}</span>
+                </span>
+                <div class="flex items-center space-x-1">
+                  <MessageCircle :size="10" :class="npcStore.getNpcState(npc.id)?.talkedToday ? 'text-muted/20' : 'text-success'" />
+                  <Gift :size="10" :class="npcGiftClass(npc.id)" />
+                  <span v-if="npc.marriageable" class="text-danger/50">
+                    <Heart :size="10" />
+                  </span>
+                  <Cake v-if="npcStore.isBirthday(npc.id)" :size="10" class="text-danger" />
+                </div>
               </div>
-              <p class="text-[10px] text-muted truncate">{{ npc.title }}</p>
+              <p class="text-[10px] text-muted truncate">{{ npc.role }}</p>
               <div class="flex items-center justify-between mt-0.5">
                 <div class="flex items-center space-x-px">
-                  <Diamond
-                    v-for="d in 12"
-                    :key="d"
-                    :size="8"
+                  <Heart
+                    v-for="h in 10"
+                    :key="h"
+                    :size="10"
                     class="flex-shrink-0"
-                    :class="(hiddenNpcStore.getHiddenNpcState(npc.id)?.affinity ?? 0) >= d * 250 ? 'text-accent' : 'text-muted/20'"
-                    :fill="(hiddenNpcStore.getHiddenNpcState(npc.id)?.affinity ?? 0) >= d * 250 ? 'currentColor' : 'none'"
+                    :class="(npcStore.getNpcState(npc.id)?.friendship ?? 0) >= h * 250 ? 'text-danger' : 'text-muted/30'"
+                    :fill="(npcStore.getNpcState(npc.id)?.friendship ?? 0) >= h * 250 ? 'currentColor' : 'none'"
                   />
                 </div>
-                <span class="text-[10px] text-muted/50">{{ hiddenNpcStore.getHiddenNpcState(npc.id)?.affinity ?? 0 }}</span>
+                <span class="text-[10px] text-muted/50">{{ npcStore.getNpcState(npc.id)?.friendship ?? 0 }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tiên Tab -->
+    <section v-if="activeTab === 'spirit'" aria-labelledby="tab-spirit-title">
+      <h2 id="tab-spirit-title" class="sr-only">{{ $i18n.locale === 'vi' ? 'Tiên linh' : 'Tiên' }}</h2>
+      <!-- 已显现的Tiên -->
+      <template v-if="revealedHiddenNpcs.length > 0">
+        <div class="grid grid-cols-4 md:grid-cols-3 gap-1.5 md:gap-2" role="list">
+          <div
+            v-for="npc in revealedHiddenNpcs"
+            :key="npc.id"
+            class="border border-accent/20 rounded-xs p-1.5 md:p-2 cursor-pointer hover:bg-accent/5 text-center md:text-left focus:outline-none focus:ring-2 focus:ring-accent/40"
+            role="button"
+            tabindex="0"
+            :aria-label="getSpiritAriaLabel(npc)"
+            @click="selectedHiddenNpc = npc.id"
+            @keydown.enter.prevent="selectedHiddenNpc = npc.id"
+            @keydown.space.prevent="selectedHiddenNpc = npc.id"
+          >
+            <div aria-hidden="true" class="h-full">
+              <!-- 移动端：紧凑布局 -->
+              <div class="md:hidden">
+                <p class="text-xs text-accent truncate">{{ npc.name }}</p>
+                <p
+                  class="text-[10px] flex items-center justify-center"
+                  :class="hiddenHeartCount(npc.id) > 0 ? 'text-accent' : 'text-muted/30'"
+                >
+                  {{ hiddenHeartCount(npc.id) }}
+                  <Diamond :size="10" :fill="hiddenHeartCount(npc.id) > 0 ? 'currentColor' : 'none'" />
+                  <span class="text-muted/50 ml-0.5">{{ hiddenNpcStore.getHiddenNpcState(npc.id)?.affinity ?? 0 }}</span>
+                </p>
+              </div>
+              <!-- 桌面端：显示更多信息 -->
+              <div class="hidden md:block">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs text-accent">{{ npc.name }}</span>
+                </div>
+                <p class="text-[10px] text-muted truncate">{{ npc.title }}</p>
+                <div class="flex items-center justify-between mt-0.5">
+                  <div class="flex items-center space-x-px">
+                    <Diamond
+                      v-for="d in 12"
+                      :key="d"
+                      :size="8"
+                      class="flex-shrink-0"
+                      :class="(hiddenNpcStore.getHiddenNpcState(npc.id)?.affinity ?? 0) >= d * 250 ? 'text-accent' : 'text-muted/20'"
+                      :fill="(hiddenNpcStore.getHiddenNpcState(npc.id)?.affinity ?? 0) >= d * 250 ? 'currentColor' : 'none'"
+                    />
+                  </div>
+                  <span class="text-[10px] text-muted/50">{{ hiddenNpcStore.getHiddenNpcState(npc.id)?.affinity ?? 0 }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -142,12 +158,19 @@
       <!-- tin đồn区(显示rumor/glimpse阶段的线索） -->
       <div v-if="rumorHiddenNpcs.length > 0" :class="{ 'mt-4': revealedHiddenNpcs.length > 0 }">
         <h3 class="text-muted/60 text-sm mb-2">{{ $i18n.locale === 'vi' ? 'Tin đồn' : 'tin đồn' }}</h3>
-        <div class="flex flex-col space-y-1">
-          <div v-for="npc in rumorHiddenNpcs" :key="npc.id" class="border border-muted/10 rounded-xs px-2 py-1 text-[10px] text-muted/50">
-            <span v-if="hiddenNpcStore.getHiddenNpcState(npc.id)?.discoveryPhase === 'rumor'">
+        <div class="flex flex-col space-y-1" role="list">
+          <div 
+            v-for="npc in rumorHiddenNpcs" 
+            :key="npc.id" 
+            class="border border-muted/10 rounded-xs px-2 py-1 text-[10px] text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/40"
+            tabindex="0"
+            role="listitem"
+            :aria-label="$i18n.locale === 'vi' ? 'Tin đồn: ' + (getLastDiscoveryLog(npc.id) ?? (hiddenNpcStore.getHiddenNpcState(npc.id)?.discoveryPhase === 'rumor' ? 'Dường như có truyền thuyết mờ ảo nào đó...' : 'Bạn từng nhìn thấy một dị tượng nào đó...')) : 'tin đồn: ' + (getLastDiscoveryLog(npc.id) ?? (hiddenNpcStore.getHiddenNpcState(npc.id)?.discoveryPhase === 'rumor' ? 'Dường như có một truyền thuyết mơ hồ nào đó……' : 'bạn đã nhìn thấy một số loại tầm nhìn……'))"
+          >
+            <span v-if="hiddenNpcStore.getHiddenNpcState(npc.id)?.discoveryPhase === 'rumor'" aria-hidden="true">
               {{ getLastDiscoveryLog(npc.id) ?? ($i18n.locale === 'vi' ? 'Dường như có truyền thuyết mờ ảo nào đó...' : 'Dường như có một truyền thuyết mơ hồ nào đó……') }}
             </span>
-            <span v-else>
+            <span v-else aria-hidden="true">
               {{ getLastDiscoveryLog(npc.id) ?? ($i18n.locale === 'vi' ? 'Bạn từng nhìn thấy một dị tượng nào đó...' : 'bạn đã nhìn thấy một số loại tầm nhìn……') }}
             </span>
           </div>
@@ -159,10 +182,10 @@
         v-if="revealedHiddenNpcs.length === 0 && rumorHiddenNpcs.length === 0"
         class="flex flex-col items-center justify-center py-12 text-muted"
       >
-        <Sparkles :size="32" class="mb-2" />
+        <Sparkles :size="32" class="mb-2" aria-hidden="true" />
         <p class="text-xs">{{ $i18n.locale === 'vi' ? 'Chưa phát hiện được tung tích của tiên linh nào.' : 'Chưa có dấu vết nào của fae được tìm thấy.' }}</p>
       </div>
-    </div>
+    </section>
 
     <!-- Tiên交互弹窗 -->
     <Transition name="panel-fade">
@@ -433,10 +456,14 @@
             <template v-else>
               <div class="flex flex-col space-y-1 max-h-40 overflow-y-auto">
                 <div
-                  v-for="item in giftableItems"
+                v-for="item in giftableItems"
                   :key="`${item.itemId}_${item.quality ?? 'normal'}`"
-                  class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5 mr-1"
+                  class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 mr-1"
+                role="button"
+                tabindex="0"
                   @click="activeGiftKey = item.itemId + ':' + item.quality"
+                @keydown.enter.prevent="activeGiftKey = item.itemId + ':' + item.quality"
+                @keydown.space.prevent="activeGiftKey = item.itemId + ':' + item.quality"
                 >
                   <span class="flex items-center space-x-1">
                     <span class="text-xs" :class="qualityTextClass(item.quality)">
@@ -497,7 +524,7 @@
                     </span>
                   </div>
                 </div>
-                <div class="flex flex-col space-y-1.5">
+                <div class="flex flex-col space-y-1.5" role="list">
                   <Button :icon="Gift" class="w-full justify-center" @click="handleGift(activeGiftItem!.itemId, activeGiftItem!.quality)">
                     tặng quà cho{{ selectedNpcDef?.name }}
                   </Button>
@@ -508,13 +535,14 @@
         </div>
       </div>
     </Transition>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
 
   import { useFocusTrap } from '@/composables/useFocusTrap'
   import { ref, computed } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { MessageCircle, Heart, Gift, Cake, X, Package, Lightbulb, Circle, CircleCheck, Users, Sparkles, Diamond } from 'lucide-vue-next'
   import { useCookingStore } from '@/stores/useCookingStore'
   import { useGameStore } from '@/stores/useGameStore'
@@ -543,6 +571,7 @@
 
 
 
+  const { locale } = useI18n()
   const npcStore = useNpcStore()
   const inventoryStore = useInventoryStore()
   const cookingStore = useCookingStore()
@@ -569,6 +598,31 @@
     const lastStepId = state.completedSteps[state.completedSteps.length - 1]
     const step = npcDef.discoverySteps.find(s => s.id === lastStepId)
     return step?.logMessage ?? null
+  }
+
+  const getNpcAriaLabel = (npc: any) => {
+    let label = `${npc.name}. `
+    const state = npcStore.getNpcState(npc.id)
+    if (state?.married) label += locale.value === 'vi' ? '[Bạn đời]. ' : '[bạn đồng hành]. '
+    else if (state?.dating) label += locale.value === 'vi' ? '[Đang hẹn hò]. ' : '[Hẹn hò]. '
+    else if (state?.zhiji) label += locale.value === 'vi' ? '[Tri kỷ]. ' : '[người bạn tâm giao]. '
+    
+    label += `${heartCount(npc.id)} ${locale.value === 'vi' ? 'trái tim' : 'hearts'}, ${state?.friendship ?? 0} ${locale.value === 'vi' ? 'điểm thiện cảm' : 'friendship'}. `
+    
+    if (state?.talkedToday) label += locale.value === 'vi' ? 'Đã nói chuyện hôm nay. ' : 'Talked today. '
+    if (state?.giftedToday) label += locale.value === 'vi' ? 'Đã tặng quà hôm nay. ' : 'Gifted today. '
+    if (npcStore.isBirthday(npc.id)) label += locale.value === 'vi' ? 'Hôm nay là sinh nhật. ' : 'Birthday today. '
+    
+    label += `${npc.role}. `
+    return label
+  }
+
+  const getSpiritAriaLabel = (npc: any) => {
+    let label = `${npc.name}. `
+    const state = hiddenNpcStore.getHiddenNpcState(npc.id)
+    label += `${npc.title}. `
+    label += `${hiddenHeartCount(npc.id)} ${locale.value === 'vi' ? 'kim cương' : 'diamonds'}, ${state?.affinity ?? 0} ${locale.value === 'vi' ? 'điểm cơ duyên' : 'affinity'}. `
+    return label
   }
 
   const tutorialHint = computed(() => {

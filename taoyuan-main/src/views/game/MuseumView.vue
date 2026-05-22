@@ -20,7 +20,7 @@
 
     <template v-else>
       <!-- 分类标签 -->
-      <div class="grid grid-cols-3 md:grid-cols-6 gap-1 mb-3">
+      <div class="grid grid-cols-3 md:grid-cols-6 gap-1 mb-3" role="list">
         <Button
           v-for="cat in MUSEUM_CATEGORIES"
           :key="cat.key"
@@ -33,7 +33,7 @@
       </div>
 
       <!-- 收藏格子 -->
-      <div class="grid grid-cols-3 md:grid-cols-5 gap-1 mb-3 max-h-72 overflow-y-auto">
+      <div class="grid grid-cols-3 md:grid-cols-5 gap-1 mb-3 max-h-72 overflow-y-auto" role="list">
         <template v-for="item in filteredItems" :key="item.id">
           <div
             v-if="museumStore.isDonated(item.id)"
@@ -96,7 +96,7 @@
           </div>
           <span class="text-accent whitespace-nowrap">{{ Math.round((museumStore.donatedCount / museumStore.totalCount) * 100) }}%</span>
         </div>
-        <div class="grid grid-cols-2 gap-x-3 gap-y-0.5">
+        <div class="grid grid-cols-2 gap-x-3 gap-y-0.5" role="list">
           <div class="flex items-center justify-between">
             <span class="text-xs text-muted">{{ $t('museum.donated') }}</span>
             <span class="text-xs">{{ museumStore.donatedCount }}</span>

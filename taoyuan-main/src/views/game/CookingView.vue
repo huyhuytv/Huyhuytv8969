@@ -23,10 +23,14 @@
     <!-- 食谱列表 -->
     <div v-if="displayedRecipeInfos.length > 0" class="border border-accent/20 rounded-xs divide-y divide-accent/10 mb-4">
       <div
-        v-for="info in displayedRecipeInfos"
+                v-for="info in displayedRecipeInfos"
         :key="info.recipe.id"
-        class="px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+        class="px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
         @click="openModal(info.recipe.id)"
+                @keydown.enter.prevent="openModal(info.recipe.id)"
+                @keydown.space.prevent="openModal(info.recipe.id)"
       >
         <div class="flex items-center justify-between">
           <span class="text-xs" :class="info.canCook ? 'text-text' : 'text-muted'">

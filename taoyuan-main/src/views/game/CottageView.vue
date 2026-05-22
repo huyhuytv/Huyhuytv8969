@@ -22,9 +22,13 @@
       </div>
       <p class="text-xs text-muted mb-2">{{ currentBenefit }}</p>
       <div
-        v-if="homeStore.nextUpgrade"
-        class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                v-if="homeStore.nextUpgrade"
+        class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
         @click="showUpgradeModal = true"
+                @keydown.enter.prevent="showUpgradeModal = true"
+                @keydown.space.prevent="showUpgradeModal = true"
       >
         <span class="text-xs">nâng cấp lên「{{ homeStore.nextUpgrade.name }}」</span>
         <span class="text-xs text-accent whitespace-nowrap">{{ homeStore.nextUpgrade.cost }}văn bản</span>
@@ -108,7 +112,7 @@
         <!-- 阶段提示 -->
         <p class="text-[10px] text-muted/60 mb-2">{{ STAGE_TIPS[npcStore.pregnancy.stage] }}</p>
         <!-- 照料操作 -->
-        <div class="grid grid-cols-2 gap-1 mb-1">
+        <div class="grid grid-cols-2 gap-1 mb-1" role="list">
           <Button
             class="py-0.5 px-1 text-[10px] justify-center"
             :disabled="npcStore.pregnancy.giftedForPregnancy"
@@ -197,7 +201,7 @@
       <!-- 送走子女确认 -->
       <div v-if="releaseConfirmChildId !== null" class="mt-2 game-panel border-danger/40">
         <p class="text-xs text-danger mb-2">quyết tâm{{ getChildName(releaseConfirmChildId) }}Gửi nó cho một người họ hàng xa? (chi phí10000văn bản)</p>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-2" role="list">
           <Button class="text-danger" @click="handleReleaseChild">Xác nhận</Button>
           <Button @click="releaseConfirmChildId = null">Hủy</Button>
         </div>
@@ -355,10 +359,14 @@
           </div>
           <div class="flex flex-col space-y-1">
             <div
-              v-for="item in ageableInInventory"
+                v-for="item in ageableInInventory"
               :key="item.itemId + item.quality"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="handleStartAgingFromModal(item.itemId, item.quality)"
+                @keydown.enter.prevent="handleStartAgingFromModal(item.itemId, item.quality)"
+                @keydown.space.prevent="handleStartAgingFromModal(item.itemId, item.quality)"
             >
               <span
                 class="text-xs"
@@ -395,7 +403,7 @@
           </p>
 
           <!-- 季节切换 -->
-          <div class="grid grid-cols-4 gap-2 mb-2">
+          <div class="grid grid-cols-4 gap-2 mb-2" role="list">
             <button
               v-for="s in SEASONS"
               :key="s"
@@ -408,7 +416,7 @@
           </div>
 
           <!-- 28ngày网格 -->
-          <div class="grid grid-cols-7 gap-px">
+          <div class="grid grid-cols-7 gap-px" role="list">
             <div v-for="wd in WEEKDAYS" :key="wd" class="text-center py-0.5">
               <span class="text-[10px]" :class="wd === 'sat' || wd === 'sun' ? 'text-accent' : 'text-muted'">{{ WEEKDAY_NAMES[wd] }}</span>
             </div>
@@ -480,10 +488,14 @@
           </div>
           <div class="flex flex-col space-y-1 max-h-60 overflow-y-auto">
             <div
-              v-for="item in spouseGiftableItems"
+                v-for="item in spouseGiftableItems"
               :key="item.itemId + item.quality"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="handleSpouseGift(item.itemId, item.quality)"
+                @keydown.enter.prevent="handleSpouseGift(item.itemId, item.quality)"
+                @keydown.space.prevent="handleSpouseGift(item.itemId, item.quality)"
             >
               <span class="flex items-center space-x-1">
                 <span class="text-xs" :class="qualityTextClass(item.quality)">
@@ -516,7 +528,7 @@
 
           <!-- 任务选择 -->
           <p class="text-xs text-muted mb-1">Chọn nhiệm vụ</p>
-          <div class="grid grid-cols-4 gap-1 mb-3">
+          <div class="grid grid-cols-4 gap-1 mb-3" role="list">
             <button
               v-for="(label, key) in npcStore.HELPER_TASK_NAMES"
               :key="key"
@@ -548,10 +560,14 @@
           <!-- 可雇佣NPC列表 -->
           <div v-else class="flex flex-col space-y-1 max-h-48 overflow-y-auto">
             <div
-              v-for="npc in hireableNpcs"
+                v-for="npc in hireableNpcs"
               :key="npc.npcId"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="hireConfirmNpcId = npc.npcId"
+                @keydown.enter.prevent="hireConfirmNpcId = npc.npcId"
+                @keydown.space.prevent="hireConfirmNpcId = npc.npcId"
             >
               <span class="text-xs">{{ npc.name }}</span>
               <span class="text-[10px] text-muted">

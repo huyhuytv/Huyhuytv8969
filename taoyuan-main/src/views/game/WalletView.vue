@@ -10,22 +10,27 @@
     </div>
     <p class="text-xs text-muted mb-3">{{ $t('wallet.unlocked_desc') }}</p>
 
-    <div class="flex flex-col space-y-1.5">
+    <div class="flex flex-col space-y-1.5" role="list">
       <div
         v-for="item in WALLET_ITEMS"
         :key="item.id"
-        class="border rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+        class="border rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5 focus:outline-none focus:ring-2 focus:ring-accent/40"
         :class="walletStore.has(item.id) ? 'border-accent/20' : 'border-accent/10 opacity-50'"
+        role="button"
+        tabindex="0"
+        :aria-label="`${$te('wallet_items.' + item.id) ? $t('wallet_items.' + item.id + '.name') : item.name}. ${$te('wallet_items.' + item.id) ? $t('wallet_items.' + item.id + '.description') : item.description}. ${walletStore.has(item.id) ? $t('wallet.unlocked') : $t('wallet.locked')}`"
         @click="selectedItem = item"
+        @keydown.enter.prevent="selectedItem = item"
+        @keydown.space.prevent="selectedItem = item"
       >
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between" aria-hidden="true">
           <span class="text-sm" :class="walletStore.has(item.id) ? 'text-accent' : 'text-muted'">
             {{ $te('wallet_items.' + item.id) ? $t('wallet_items.' + item.id + '.name') : item.name }}
           </span>
           <CircleCheck v-if="walletStore.has(item.id)" :size="14" class="text-success shrink-0" />
           <Lock v-else :size="14" class="text-muted shrink-0" />
         </div>
-        <p class="text-xs text-muted mt-0.5">
+        <p class="text-xs text-muted mt-0.5" aria-hidden="true">
           {{ $te('wallet_items.' + item.id) ? $t('wallet_items.' + item.id + '.description') : item.description }}
         </p>
       </div>

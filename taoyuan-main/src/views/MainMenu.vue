@@ -1,18 +1,19 @@
 <template>
-  <div
+  <main
     class="flex min-h-screen flex-col items-center justify-center space-y-8 px-4"
     @click.once="startBgm"
     :class="{ 'py-10': Capacitor.isNativePlatform() }"
     @click="slotMenuOpen = null"
+    aria-labelledby="main-title"
   >
     <!-- 标题 -->
-    <div class="flex items-center space-x-3">
-      <div class="logo" />
-      <h1 class="text-accent text-2xl md:text-4xl tracking-widest">{{ pkg.title }}</h1>
-    </div>
+    <header class="flex items-center space-x-3">
+      <div class="logo" aria-hidden="true" />
+      <h1 id="main-title" class="text-accent text-2xl md:text-4xl tracking-widest">{{ pkg.title }}</h1>
+    </header>
 
     <!-- 主菜单 -->
-    <div class="flex flex-col space-y-3 w-full md:w-6/12">
+    <nav class="flex flex-col space-y-3 w-full md:w-6/12" aria-label="Main menu">
       <Button class="text-center justify-center py-3" :icon="Play" @click="showPrivacy = true">{{ $t('menu.new_game') }}</Button>
 
       <!-- 存档列表 -->
@@ -69,7 +70,7 @@
       </template>
       <!-- 关于 -->
       <Button class="text-center justify-center text-muted" :icon="Info" @click="showAbout = true">{{ $t('menu.about_game') }}</Button>
-    </div>
+    </nav>
 
     <!-- 关于弹窗 -->
     <Transition name="panel-fade">
@@ -353,7 +354,7 @@
         </div>
       </div>
     </Transition>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

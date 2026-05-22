@@ -12,41 +12,45 @@
     </div>
 
     <!-- 角色身份 + 属性 -->
-    <div class="border border-accent/20 rounded-xs p-2 mb-3">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-sm text-accent">{{ playerStore.playerName }}</span>
-        <span class="text-xs text-muted">{{ genderLabel }}</span>
-      </div>
+    <div class="border border-accent/20 rounded-xs p-2 mb-3 focus:outline-none focus:ring-2 focus:ring-accent/40" 
+         tabindex="0" 
+         :aria-label="`${playerStore.playerName}, ${genderLabel}. ${$t('charInfoView.stamina')}: ${playerStore.stamina}/${playerStore.maxStamina}. ${$t('charInfoView.hp')}: ${playerStore.hp}/${playerStore.getMaxHp()}. ${$t('charInfoView.money')}: ${playerStore.money}${$t('status_bar.money_unit')}`">
+      <div aria-hidden="true">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm text-accent">{{ playerStore.playerName }}</span>
+          <span class="text-xs text-muted">{{ genderLabel }}</span>
+        </div>
 
-       <div class="flex flex-col space-y-1.5">
-        <!-- 体力 -->
-        <div class="flex items-center space-x-2">
-          <span class="text-xs text-muted shrink-0">{{ $t('charInfoView.stamina') }}</span>
-          <div class="flex-1 h-1 bg-bg rounded-xs border border-accent/10">
-            <div
-              class="h-full rounded-xs transition-all"
-              :class="playerStore.staminaPercent > 35 ? 'bg-success' : 'bg-danger'"
-              :style="{ width: playerStore.staminaPercent + '%' }"
-            />
+        <div class="flex flex-col space-y-1.5" role="list">
+          <!-- 体力 -->
+          <div class="flex items-center space-x-2">
+            <span class="text-xs text-muted shrink-0">{{ $t('charInfoView.stamina') }}</span>
+            <div class="flex-1 h-1 bg-bg rounded-xs border border-accent/10">
+              <div
+                class="h-full rounded-xs transition-all"
+                :class="playerStore.staminaPercent > 35 ? 'bg-success' : 'bg-danger'"
+                :style="{ width: playerStore.staminaPercent + '%' }"
+              />
+            </div>
+            <span class="text-xs whitespace-nowrap">{{ playerStore.stamina }}/{{ playerStore.maxStamina }}</span>
           </div>
-          <span class="text-xs whitespace-nowrap">{{ playerStore.stamina }}/{{ playerStore.maxStamina }}</span>
-        </div>
-        <!-- 生命 -->
-        <div class="flex items-center space-x-2">
-          <span class="text-xs text-muted shrink-0">{{ $t('charInfoView.hp') }}</span>
-          <div class="flex-1 h-1 bg-bg rounded-xs border border-accent/10">
-            <div
-              class="h-full rounded-xs transition-all"
-              :class="playerStore.getHpPercent() > 25 ? 'bg-success' : 'bg-danger'"
-              :style="{ width: playerStore.getHpPercent() + '%' }"
-            />
+          <!-- 生命 -->
+          <div class="flex items-center space-x-2">
+            <span class="text-xs text-muted shrink-0">{{ $t('charInfoView.hp') }}</span>
+            <div class="flex-1 h-1 bg-bg rounded-xs border border-accent/10">
+              <div
+                class="h-full rounded-xs transition-all"
+                :class="playerStore.getHpPercent() > 25 ? 'bg-success' : 'bg-danger'"
+                :style="{ width: playerStore.getHpPercent() + '%' }"
+              />
+            </div>
+            <span class="text-xs whitespace-nowrap">{{ playerStore.hp }}/{{ playerStore.getMaxHp() }}</span>
           </div>
-          <span class="text-xs whitespace-nowrap">{{ playerStore.hp }}/{{ playerStore.getMaxHp() }}</span>
-        </div>
-        <!-- 铜钱 -->
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-muted">{{ $t('charInfoView.money') }}</span>
-          <span class="text-xs text-accent">{{ playerStore.money }}{{ $t('status_bar.money_unit') }}</span>
+          <!-- 铜钱 -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-muted">{{ $t('charInfoView.money') }}</span>
+            <span class="text-xs text-accent">{{ playerStore.money }}{{ $t('status_bar.money_unit') }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -54,49 +58,54 @@
     <!-- 装备槽位 -->
     <div class="border border-accent/20 rounded-xs p-2 mb-3">
       <p class="text-xs text-muted mb-1.5">{{ $t('charInfoView.weapons') }}</p>
-      <div class="grid grid-cols-3 gap-1 mb-1">
+      <div class="grid grid-cols-3 gap-1 mb-1" role="list">
         <button
           class="block w-full border border-accent/10 rounded-xs px-2 py-1 text-center cursor-pointer hover:bg-accent/5 focus:outline-accent bg-transparent"
           @click="activeSlot = 'weapon'"
+          :aria-label="`${$t('charInfoView.weapons')}: ${equippedWeaponName}`"
         >
-          <span class="text-[10px] text-muted block">{{ $t('charInfoView.weapons') }}</span>
-          <span class="text-xs text-accent truncate block">{{ equippedWeaponName }}</span>
+          <span class="text-[10px] text-muted block" aria-hidden="true">{{ $t('charInfoView.weapons') }}</span>
+          <span class="text-xs text-accent truncate block" aria-hidden="true">{{ equippedWeaponName }}</span>
         </button>
         <button
           class="block w-full border border-accent/10 rounded-xs px-2 py-1 text-center cursor-pointer hover:bg-accent/5 focus:outline-accent bg-transparent"
           @click="activeSlot = 'ring1'"
+          :aria-label="`${$t('charInfoView.ring_slot_1')}: ${equippedRing1 ? equippedRing1.name : $t('charInfoView.empty')}`"
         >
-          <span class="text-[10px] text-muted block">{{ $t('charInfoView.ring_slot_1') }}</span>
-          <span class="text-xs truncate block" :class="equippedRing1 ? 'text-accent' : 'text-muted/40'">
+          <span class="text-[10px] text-muted block" aria-hidden="true">{{ $t('charInfoView.ring_slot_1') }}</span>
+          <span class="text-xs truncate block" :class="equippedRing1 ? 'text-accent' : 'text-muted/40'" aria-hidden="true">
             {{ equippedRing1?.name ?? $t('charInfoView.empty') }}
           </span>
         </button>
         <button
           class="block w-full border border-accent/10 rounded-xs px-2 py-1 text-center cursor-pointer hover:bg-accent/5 focus:outline-accent bg-transparent"
           @click="activeSlot = 'ring2'"
+          :aria-label="`${$t('charInfoView.ring_slot_2')}: ${equippedRing2 ? equippedRing2.name : $t('charInfoView.empty')}`"
         >
-          <span class="text-[10px] text-muted block">{{ $t('charInfoView.ring_slot_2') }}</span>
-          <span class="text-xs truncate block" :class="equippedRing2 ? 'text-accent' : 'text-muted/40'">
+          <span class="text-[10px] text-muted block" aria-hidden="true">{{ $t('charInfoView.ring_slot_2') }}</span>
+          <span class="text-xs truncate block" :class="equippedRing2 ? 'text-accent' : 'text-muted/40'" aria-hidden="true">
             {{ equippedRing2?.name ?? $t('charInfoView.empty') }}
           </span>
         </button>
       </div>
-      <div class="grid grid-cols-2 gap-1">
+      <div class="grid grid-cols-2 gap-1" role="list">
         <button 
           class="block w-full border border-accent/10 rounded-xs px-2 py-1 text-center cursor-pointer hover:bg-accent/5 focus:outline-accent bg-transparent" 
           @click="activeSlot = 'hat'"
+          :aria-label="`${$t('charInfoView.hats')}: ${equippedHatName ?? $t('charInfoView.empty')}`"
         >
-          <span class="text-[10px] text-muted block">{{ $t('charInfoView.hats') }}</span>
-          <span class="text-xs truncate block" :class="equippedHatName ? 'text-accent' : 'text-muted/40'">
+          <span class="text-[10px] text-muted block" aria-hidden="true">{{ $t('charInfoView.hats') }}</span>
+          <span class="text-xs truncate block" :class="equippedHatName ? 'text-accent' : 'text-muted/40'" aria-hidden="true">
             {{ equippedHatName ?? $t('charInfoView.empty') }}
           </span>
         </button>
         <button 
           class="block w-full border border-accent/10 rounded-xs px-2 py-1 text-center cursor-pointer hover:bg-accent/5 focus:outline-accent bg-transparent" 
           @click="activeSlot = 'shoe'"
+          :aria-label="`${$t('charInfoView.shoes')}: ${equippedShoeName ?? $t('charInfoView.empty')}`"
         >
-          <span class="text-[10px] text-muted block">{{ $t('charInfoView.shoes') }}</span>
-          <span class="text-xs truncate block" :class="equippedShoeName ? 'text-accent' : 'text-muted/40'">
+          <span class="text-[10px] text-muted block" aria-hidden="true">{{ $t('charInfoView.shoes') }}</span>
+          <span class="text-xs truncate block" :class="equippedShoeName ? 'text-accent' : 'text-muted/40'" aria-hidden="true">
             {{ equippedShoeName ?? $t('charInfoView.empty') }}
           </span>
         </button>
@@ -118,9 +127,13 @@
               <div
                 v-for="(weapon, index) in inventoryStore.ownedWeapons"
                 :key="index"
-                class="flex items-center justify-between border rounded-xs px-2 py-1.5 cursor-pointer hover:bg-accent/5 mr-1"
+                class="flex items-center justify-between border rounded-xs px-2 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 mr-1"
+                role="button"
+                tabindex="0"
                 :class="index === inventoryStore.equippedWeaponIndex ? 'border-accent/30' : 'border-accent/10'"
                 @click="handleEquipWeapon(index)"
+                @keydown.enter.prevent="handleEquipWeapon(index)"
+                @keydown.space.prevent="handleEquipWeapon(index)"
               >
                 <div class="min-w-0">
                   <span class="text-xs" :class="index === inventoryStore.equippedWeaponIndex ? 'text-accent' : ''">
@@ -143,19 +156,27 @@
               <!-- 卸下按钮 -->
               <div
                 v-if="(activeSlot === 'ring1' ? inventoryStore.equippedRingSlot1 : inventoryStore.equippedRingSlot2) >= 0"
-                class="flex items-center border border-danger/20 rounded-xs px-2 py-1.5 cursor-pointer hover:bg-danger/5 mr-1"
+                class="flex items-center border border-danger/20 rounded-xs px-2 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-danger/5 mr-1"
+                role="button"
+                tabindex="0"
                 @click="handleUnequipRingFromPopup"
+                @keydown.enter.prevent="handleUnequipRingFromPopup"
+                @keydown.space.prevent="handleUnequipRingFromPopup"
               >
                 <span class="text-xs text-danger">{{ $t('charInfoView.unequip_current_ring') }}</span>
               </div>
               <!-- 戒指列表 -->
               <template v-if="inventoryStore.ownedRings.length > 0">
                 <div
-                  v-for="(ring, idx) in ownedRingList"
+                v-for="(ring, idx) in ownedRingList"
                   :key="idx"
-                  class="flex items-center justify-between border rounded-xs px-2 py-1.5 cursor-pointer hover:bg-accent/5 mr-1"
+                  class="flex items-center justify-between border rounded-xs px-2 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 mr-1"
+                role="button"
+                tabindex="0"
                   :class="isRingInCurrentSlot(idx) ? 'border-accent/30' : 'border-accent/10'"
                   @click="handleEquipRingFromPopup(idx)"
+                @keydown.enter.prevent="handleEquipRingFromPopup(idx)"
+                @keydown.space.prevent="handleEquipRingFromPopup(idx)"
                 >
                   <div class="min-w-0">
                     <span class="text-xs" :class="isRingInCurrentSlot(idx) ? 'text-accent' : ''">{{ ring.name }}</span>
@@ -177,18 +198,26 @@
             <div class="flex flex-col space-y-1 max-h-60 overflow-y-auto">
               <div
                 v-if="inventoryStore.equippedHatIndex >= 0"
-                class="flex items-center border border-danger/20 rounded-xs px-2 py-1.5 cursor-pointer hover:bg-danger/5 mr-1"
+                class="flex items-center border border-danger/20 rounded-xs px-2 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-danger/5 mr-1"
+                role="button"
+                tabindex="0"
                 @click="handleUnequipHatFromPopup"
+                @keydown.enter.prevent="handleUnequipHatFromPopup"
+                @keydown.space.prevent="handleUnequipHatFromPopup"
               >
                 <span class="text-xs text-danger">{{ $t('charInfoView.unequip_current_hat') }}</span>
               </div>
               <template v-if="inventoryStore.ownedHats.length > 0">
                 <div
-                  v-for="hat in ownedHatList"
+                v-for="hat in ownedHatList"
                   :key="hat.index"
-                  class="flex items-center justify-between border rounded-xs px-2 py-1.5 cursor-pointer hover:bg-accent/5 mr-1"
+                  class="flex items-center justify-between border rounded-xs px-2 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 mr-1"
+                role="button"
+                tabindex="0"
                   :class="hat.index === inventoryStore.equippedHatIndex ? 'border-accent/30' : 'border-accent/10'"
                   @click="handleEquipHatFromPopup(hat.index)"
+                @keydown.enter.prevent="handleEquipHatFromPopup(hat.index)"
+                @keydown.space.prevent="handleEquipHatFromPopup(hat.index)"
                 >
                   <div class="min-w-0">
                     <span class="text-xs" :class="hat.index === inventoryStore.equippedHatIndex ? 'text-accent' : ''">{{ hat.name }}</span>
@@ -207,18 +236,26 @@
             <div class="flex flex-col space-y-1 max-h-60 overflow-y-auto">
               <div
                 v-if="inventoryStore.equippedShoeIndex >= 0"
-                class="flex items-center border border-danger/20 rounded-xs px-2 py-1.5 cursor-pointer hover:bg-danger/5 mr-1"
+                class="flex items-center border border-danger/20 rounded-xs px-2 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-danger/5 mr-1"
+                role="button"
+                tabindex="0"
                 @click="handleUnequipShoeFromPopup"
+                @keydown.enter.prevent="handleUnequipShoeFromPopup"
+                @keydown.space.prevent="handleUnequipShoeFromPopup"
               >
                 <span class="text-xs text-danger">{{ $t('charInfoView.unequip_current_shoe') }}</span>
               </div>
               <template v-if="inventoryStore.ownedShoes.length > 0">
                 <div
-                  v-for="shoe in ownedShoeList"
+                v-for="shoe in ownedShoeList"
                   :key="shoe.index"
-                  class="flex items-center justify-between border rounded-xs px-2 py-1.5 cursor-pointer hover:bg-accent/5 mr-1"
+                  class="flex items-center justify-between border rounded-xs px-2 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5 mr-1"
+                role="button"
+                tabindex="0"
                   :class="shoe.index === inventoryStore.equippedShoeIndex ? 'border-accent/30' : 'border-accent/10'"
                   @click="handleEquipShoeFromPopup(shoe.index)"
+                @keydown.enter.prevent="handleEquipShoeFromPopup(shoe.index)"
+                @keydown.space.prevent="handleEquipShoeFromPopup(shoe.index)"
                 >
                   <div class="min-w-0">
                     <span class="text-xs" :class="shoe.index === inventoryStore.equippedShoeIndex ? 'text-accent' : ''">
@@ -242,17 +279,22 @@
         <p class="text-xs text-muted">{{ $t('charInfoView.tools') }}</p>
         <button class="text-xs text-accent hover:underline" @click="goToUpgrade">{{ $t('charInfoView.go_to_upgrade') }}</button>
       </div>
-      <div class="flex flex-col space-y-1">
+      <div class="flex flex-col space-y-1" role="list">
         <div
           v-for="tool in inventoryStore.tools"
           :key="tool.type"
-          class="flex items-center justify-between border border-accent/10 rounded-xs px-2 py-1"
+          class="flex items-center justify-between border border-accent/10 rounded-xs px-2 py-1 focus:outline-none focus:ring-2 focus:ring-accent/40"
+          tabindex="0"
+          role="listitem"
+          :aria-label="`${$t('tool_upgrade.names.' + tool.type)} ${$t('tool_upgrade.tiers.' + tool.tier)}. -${Math.round((1 - inventoryStore.getToolStaminaMultiplier(tool.type)) * 100)}% ${$t('charInfoView.stamina')}`"
         >
-          <div>
-            <span class="text-xs">{{ $t('tool_upgrade.names.' + tool.type) }}</span>
-            <span class="text-xs text-muted ml-1">{{ $t('tool_upgrade.tiers.' + tool.tier) }}</span>
+          <div aria-hidden="true" class="flex-1 flex justify-between">
+            <div>
+              <span class="text-xs">{{ $t('tool_upgrade.names.' + tool.type) }}</span>
+              <span class="text-xs text-muted ml-1">{{ $t('tool_upgrade.tiers.' + tool.tier) }}</span>
+            </div>
+            <span class="text-[10px] text-muted">-{{ Math.round((1 - inventoryStore.getToolStaminaMultiplier(tool.type)) * 100) }}%{{ $t('charInfoView.stamina') }}</span>
           </div>
-          <span class="text-[10px] text-muted">-{{ Math.round((1 - inventoryStore.getToolStaminaMultiplier(tool.type)) * 100) }}%{{ $t('charInfoView.stamina') }}</span>
         </div>
       </div>
     </div>
@@ -263,10 +305,16 @@
         <p class="text-xs text-muted">{{ $t('charInfoView.skills') }}</p>
         <button class="text-xs text-accent hover:underline" @click="goToSkills">{{ $t('charInfoView.view_details') }}</button>
       </div>
-      <div class="flex flex-col space-y-0.5">
-        <div v-for="skill in skillStore.skills" :key="skill.type" class="flex items-center justify-between">
-          <span class="text-xs text-muted">{{ $t('skills.' + skill.type) }}</span>
-          <div class="flex items-center space-x-1.5">
+      <div class="flex flex-col space-y-0.5 mt-2" role="list">
+        <div 
+          v-for="skill in skillStore.skills" :key="skill.type" 
+          class="flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-accent/40 rounded-xs p-1 -mx-1"
+          tabindex="0"
+          role="listitem"
+          :aria-label="`${$t('skills.' + skill.type)} Lv.${skill.level}. ${skill.perk5 ? $t('skills.' + skill.perk5) : ''} ${skill.perk10 ? $t('skills.' + skill.perk10) : ''}`"
+        >
+          <span class="text-xs text-muted" aria-hidden="true">{{ $t('skills.' + skill.type) }}</span>
+          <div class="flex items-center space-x-1.5" aria-hidden="true">
             <span class="text-xs text-accent">Lv.{{ skill.level }}</span>
             <span v-if="skill.perk5" class="text-[10px] text-success">{{ $t('skills.' + skill.perk5) }}</span>
             <span v-if="skill.perk10" class="text-[10px] text-success">{{ $t('skills.' + skill.perk10) }}</span>
@@ -278,10 +326,16 @@
     <!-- 被动加成 -->
     <div v-if="unlockedWalletItems.length > 0" class="border border-accent/20 rounded-xs p-2 mb-3">
       <p class="text-xs text-muted mb-1.5">{{ $t('charInfoView.passive_bonus') }}</p>
-      <div class="flex flex-col space-y-0.5">
-        <div v-for="item in unlockedWalletItems" :key="item.id" class="flex items-center justify-between">
-          <span class="text-xs text-accent">{{ item.name }}</span>
-          <span class="text-xs text-muted">{{ item.description }}</span>
+      <div class="flex flex-col space-y-0.5" role="list">
+        <div 
+          v-for="item in unlockedWalletItems" :key="item.id" 
+          class="flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-accent/40 rounded-xs p-1 -mx-1"
+          tabindex="0"
+          role="listitem"
+          :aria-label="`${item.name}. ${item.description}`"
+        >
+          <span class="text-xs text-accent" aria-hidden="true">{{ item.name }}</span>
+          <span class="text-xs text-muted" aria-hidden="true">{{ item.description }}</span>
         </div>
       </div>
     </div>
@@ -289,14 +343,14 @@
     <!-- 家庭 -->
     <div v-if="spouseInfo" class="border border-accent/20 rounded-xs p-2">
       <p class="text-xs text-muted mb-1.5">{{ $t('charInfoView.family') }}</p>
-      <div class="flex flex-col space-y-0.5">
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-muted">{{ $t('charInfoView.spouse') }}</span>
-          <span class="text-xs text-accent">{{ spouseInfo.name }}</span>
+      <div class="flex flex-col space-y-0.5" role="list">
+        <div class="flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-accent/40 rounded-xs p-1 -mx-1" tabindex="0" role="listitem" :aria-label="`${$t('charInfoView.spouse')}: ${spouseInfo.name}`">
+          <span class="text-xs text-muted" aria-hidden="true">{{ $t('charInfoView.spouse') }}</span>
+          <span class="text-xs text-accent" aria-hidden="true">{{ spouseInfo.name }}</span>
         </div>
-        <div v-for="child in npcStore.children" :key="child.id" class="flex items-center justify-between">
-          <span class="text-xs text-muted">{{ child.name }}</span>
-          <span class="text-xs">{{ $t('charInfoView.children_stages.' + child.stage) }}</span>
+        <div v-for="child in npcStore.children" :key="child.id" class="flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-accent/40 rounded-xs p-1 -mx-1" tabindex="0" role="listitem" :aria-label="`${child.name}: ${$t('charInfoView.children_stages.' + child.stage)}`">
+          <span class="text-xs text-muted" aria-hidden="true">{{ child.name }}</span>
+          <span class="text-xs" aria-hidden="true">{{ $t('charInfoView.children_stages.' + child.stage) }}</span>
         </div>
       </div>
     </div>

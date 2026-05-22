@@ -12,7 +12,7 @@
         <X :size="14" aria-hidden="true" />
       </button>
       <Divider title class="my-4" :label="$t('save_manager.title')" id="save-manager-title" />
-      <div class="flex-1 flex flex-col space-y-2 mb-3" @click="menuOpen = null">
+      <div class="flex-1 flex flex-col space-y-2 mb-3" @click="menuOpen = null" role="presentation">
         <div v-for="info in slots" :key="info.slot">
           <div v-if="info.exists" class="flex space-x-1 w-full">
             <button v-if="allowLoad" class="btn flex-1 !justify-between text-xs" @click="$emit('load', info.slot)">

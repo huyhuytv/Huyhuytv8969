@@ -12,13 +12,17 @@
         <MapPin :size="14" class="inline" />
         Điểm câu cá
       </p>
-      <div class="grid grid-cols-3 gap-1">
+      <div class="grid grid-cols-3 gap-1" role="list">
         <div
-          v-for="loc in FISHING_LOCATIONS"
+                v-for="loc in FISHING_LOCATIONS"
           :key="loc.id"
-          class="text-center border rounded-xs px-2 py-1.5 cursor-pointer"
+          class="text-center border rounded-xs px-2 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40"
+                role="button"
+                tabindex="0"
           :class="fishingStore.fishingLocation === loc.id ? 'border-accent/60 bg-accent/10' : 'border-accent/20 hover:bg-accent/5'"
           @click="handleSetLocation(loc.id)"
+                @keydown.enter.prevent="handleSetLocation(loc.id)"
+                @keydown.space.prevent="handleSetLocation(loc.id)"
         >
           <span class="text-xs" :class="fishingStore.fishingLocation === loc.id ? 'text-accent' : ''">
             {{ loc.name }}
@@ -39,8 +43,12 @@
         </div>
         <!-- 鱼饵 -->
         <div
-          class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
           @click="showBaitModal = true"
+                @keydown.enter.prevent="showBaitModal = true"
+                @keydown.space.prevent="showBaitModal = true"
         >
           <span class="text-xs">Mồi câu</span>
           <span class="text-xs" :class="fishingStore.equippedBait ? 'text-accent' : 'text-muted'">
@@ -76,8 +84,12 @@
         <span class="text-xs text-muted">{{ playerStore.stamina }}/{{ playerStore.maxStamina }} sức mạnh thể chất</span>
       </div>
       <div
-        class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
         @click="handleStartFishing"
+                @keydown.enter.prevent="handleStartFishing"
+                @keydown.space.prevent="handleStartFishing"
       >
         <span class="text-xs">
           <Target :size="12" class="inline" />
@@ -107,10 +119,14 @@
       </div>
       <div v-if="fishingStore.availableFish.length > 0" class="flex flex-col space-y-1">
         <div
-          v-for="f in fishingStore.availableFish"
+                v-for="f in fishingStore.availableFish"
           :key="f.name"
-          class="flex items-center justify-between border border-accent/10 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+          class="flex items-center justify-between border border-accent/10 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
           @click="selectedFish = f"
+                @keydown.enter.prevent="selectedFish = f"
+                @keydown.space.prevent="selectedFish = f"
         >
           <span class="text-xs" :class="DIFFICULTY_COLORS[f.difficulty]">{{ f.name }}</span>
           <span class="text-[10px]" :class="DIFFICULTY_COLORS[f.difficulty]">
@@ -150,9 +166,13 @@
         <p class="text-xs">Chậu cua có thể được đặt ở đây sau khi mua hoặc chế tạo chúng.</p>
       </div>
       <div
-        v-if="hasCrabPotInBag"
-        class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                v-if="hasCrabPotInBag"
+        class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
         @click="handlePlaceCrabPot"
+                @keydown.enter.prevent="handlePlaceCrabPot"
+                @keydown.space.prevent="handlePlaceCrabPot"
       >
         <span class="text-xs">Đặt lồng cua</span>
         <span class="text-xs text-muted">{{ currentLocationName }}</span>
@@ -168,8 +188,12 @@
       <div v-if="canPan">
         <p class="text-xs text-muted mb-2">Khi nước sông dâng cao vào những ngày mưa, bạn có thể dùng ch���o vàng để đãi vàng theo dòng nước.</p>
         <div
-          class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
           @click="handlePan"
+                @keydown.enter.prevent="handlePan"
+                @keydown.space.prevent="handlePan"
         >
           <span class="text-xs">Đãi vàng 1 lần</span>
           <span class="text-xs text-muted">Tiêu hao thể lực · {{ Math.round(panTime * 60) }}phút</span>
@@ -211,8 +235,12 @@
               <div
                 v-for="b in availableBaits"
                 :key="b.id"
-                class="flex items-center justify-between border border-accent/10 rounded-xs px-2 py-1 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/10 rounded-xs px-2 py-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
                 @click="handleEquipBaitFromModal(b.id)"
+                @keydown.enter.prevent="handleEquipBaitFromModal(b.id)"
+                @keydown.space.prevent="handleEquipBaitFromModal(b.id)"
               >
                 <span class="text-xs">{{ b.name }}</span>
                 <span class="text-xs text-muted">&times;{{ b.count }}</span>
@@ -258,8 +286,12 @@
               <div
                 v-for="t in availableTackles"
                 :key="t.id"
-                class="flex items-center justify-between border border-accent/10 rounded-xs px-2 py-1 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/10 rounded-xs px-2 py-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
                 @click="handleEquipTackleFromModal(t.id)"
+                @keydown.enter.prevent="handleEquipTackleFromModal(t.id)"
+                @keydown.space.prevent="handleEquipTackleFromModal(t.id)"
               >
                 <span class="text-xs">{{ t.name }}</span>
                 <span class="text-xs text-muted">&times;{{ t.count }}</span>

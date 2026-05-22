@@ -84,10 +84,14 @@
           </div>
           <div v-else-if="coopIncubatableEggs.length > 0" class="flex flex-col space-y-1">
             <div
-              v-for="eggItem in coopIncubatableEggs"
+                v-for="eggItem in coopIncubatableEggs"
               :key="eggItem.itemId"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="handleStartIncubation(eggItem.itemId)"
+                @keydown.enter.prevent="handleStartIncubation(eggItem.itemId)"
+                @keydown.space.prevent="handleStartIncubation(eggItem.itemId)"
             >
               <span class="text-xs">{{ eggItem.name }}</span>
               <span class="text-xs text-muted">&times;{{ eggItem.count }}</span>
@@ -109,10 +113,14 @@
           </div>
           <div v-else-if="barnIncubatableEggs.length > 0" class="flex flex-col space-y-1">
             <div
-              v-for="eggItem in barnIncubatableEggs"
+                v-for="eggItem in barnIncubatableEggs"
               :key="eggItem.itemId"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="handleStartBarnIncubation(eggItem.itemId)"
+                @keydown.enter.prevent="handleStartBarnIncubation(eggItem.itemId)"
+                @keydown.space.prevent="handleStartBarnIncubation(eggItem.itemId)"
             >
               <span class="text-xs">{{ eggItem.name }}</span>
               <span class="text-xs text-muted">&times;{{ eggItem.count }}</span>
@@ -317,8 +325,40 @@
         </div>
         <div v-else>
           <div
-            class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
             @click="
+              openBuyModal(
+                {
+                  type: 'horse' as AnimalType,
+                  name: (i18n.global.locale.value === 'vi' ? 'Ngựa' : 'Ngựa'),
+                  building: 'stable' as AnimalBuildingType,
+                  cost: 5000,
+                  productId: '',
+                  productName: (i18n.global.locale.value === 'vi' ? 'Không' : 'Không'),
+                  produceDays: 0,
+                  friendship: { min: 0, max: 1000 }
+                },
+                'stable'
+              )
+            "
+                @keydown.enter.prevent="
+              openBuyModal(
+                {
+                  type: 'horse' as AnimalType,
+                  name: (i18n.global.locale.value === 'vi' ? 'Ngựa' : 'Ngựa'),
+                  building: 'stable' as AnimalBuildingType,
+                  cost: 5000,
+                  productId: '',
+                  productName: (i18n.global.locale.value === 'vi' ? 'Không' : 'Không'),
+                  produceDays: 0,
+                  friendship: { min: 0, max: 1000 }
+                },
+                'stable'
+              )
+            "
+                @keydown.space.prevent="
               openBuyModal(
                 {
                   type: 'horse' as AnimalType,
@@ -360,11 +400,15 @@
         <p class="text-xs text-muted mb-1">{{ $t('animalView.feed_selection') }}</p>
         <div class="flex flex-col space-y-1">
           <div
-            v-for="feed in feedCounts"
+                v-for="feed in feedCounts"
             :key="feed.id"
-            class="flex items-center justify-between border rounded-xs px-3 py-1.5 cursor-pointer"
+            class="flex items-center justify-between border rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40"
+                role="button"
+                tabindex="0"
             :class="selectedFeed === feed.id ? 'border-accent bg-accent/10' : 'border-accent/20 hover:bg-accent/5'"
             @click="selectedFeed = feed.id"
+                @keydown.enter.prevent="selectedFeed = feed.id"
+                @keydown.space.prevent="selectedFeed = feed.id"
           >
             <div class="flex items-center space-x-2">
               <span class="text-xs" :class="selectedFeed === feed.id ? 'text-accent' : ''">{{ getFeedDisplayName(feed.id) }}</span>
@@ -445,10 +489,14 @@
           </div>
           <div class="flex flex-col space-y-1">
             <div
-              v-for="aDef in getAnimalDefsForBuilding(buyListBuilding)"
+                v-for="aDef in getAnimalDefsForBuilding(buyListBuilding)"
               :key="aDef.type"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="handleSelectAnimalToBuy(aDef)"
+                @keydown.enter.prevent="handleSelectAnimalToBuy(aDef)"
+                @keydown.space.prevent="handleSelectAnimalToBuy(aDef)"
             >
               <span class="text-xs">{{ getAnimalVietnameseNameByName(aDef.name) }}</span>
               <span class="text-xs text-accent whitespace-nowrap">{{ $t('animalView.coins_unit', { cost: aDef.cost }) }}</span>

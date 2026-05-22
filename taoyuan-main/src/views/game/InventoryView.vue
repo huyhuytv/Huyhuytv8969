@@ -1,16 +1,16 @@
 <template>
-  <div>
+  <main aria-labelledby="inventory-title">
     <!-- 标题 -->
-    <div class="flex items-center justify-between mb-1">
+    <h1 id="inventory-title" class="flex items-center justify-between mb-1">
       <div class="flex items-center space-x-1.5 text-sm text-accent">
-        <Package :size="14" />
+        <Package :size="14" aria-hidden="true" />
         <span>{{ $t('inventoryView.title') }}</span>
       </div>
       <span class="text-xs text-muted">
         {{ inventoryStore.items.length }}/{{ inventoryStore.capacity }}
         <span v-if="inventoryStore.tempItems.length > 0" class="text-danger">+{{ inventoryStore.tempItems.length }}{{ $t('inventoryView.spill') }}</span>
       </span>
-    </div>
+    </h1>
 
     <!-- 页签切换 -->
     <div class="flex space-x-1 mb-3">
@@ -26,7 +26,8 @@
     </div>
 
     <!-- 物品页 -->
-    <template v-if="tab === 'items'">
+    <section v-if="tab === 'items'" aria-labelledby="tab-items-title">
+      <h2 id="tab-items-title" class="sr-only">{{ $t('inventoryView.tab_items') }}</h2>
       <div v-if="inventoryStore.items.length > 1" class="flex justify-end mb-1.5 space-x-1">
         <Button
           class="py-0 px-1.5"
@@ -39,14 +40,19 @@
         </Button>
         <Button class="py-0 px-1.5" :icon="ArrowDown01" :icon-size="12" @click="inventoryStore.sortItems()">{{ $t('inventoryView.btn_sort') }}</Button>
       </div>
-      <div v-if="filteredItems.length > 0" class="grid grid-cols-3 md:grid-cols-5 gap-1.5">
+      <div v-if="filteredItems.length > 0" class="grid grid-cols-3 md:grid-cols-5 gap-1.5" role="list">
         <div
           v-for="(item, idx) in filteredItems"
           :key="idx"
-          class="border border-accent/20 rounded-xs p-1.5 text-center cursor-pointer hover:bg-accent/5 transition-colors relative"
+          class="border border-accent/20 rounded-xs p-1.5 text-center cursor-pointer hover:bg-accent/5 transition-colors relative focus:outline-none focus:ring-2 focus:ring-accent/40"
+          role="button"
+          tabindex="0"
+          :aria-label="`${getItemById(item.itemId)?.name} x${item.quantity}. ${item.locked ? $t('inventoryView.btn_lock') : ''}. ${item.quality !== 'normal' ? QUALITY_NAMES[item.quality] : ''}`"
           @click="activeItemKey = item.itemId + ':' + item.quality"
+          @keydown.enter.prevent="activeItemKey = item.itemId + ':' + item.quality"
+          @keydown.space.prevent="activeItemKey = item.itemId + ':' + item.quality"
         >
-          <Lock v-if="item.locked" :size="10" class="absolute top-0.5 left-0.5 text-accent/60" />
+          <Lock v-if="item.locked" :size="10" class="absolute top-0.5 left-0.5 text-accent/60" aria-hidden="true" />
           <div
             class="text-xs truncate"
             :class="{
@@ -54,10 +60,11 @@
               'text-quality-excellent': item.quality === 'excellent',
               'text-quality-supreme': item.quality === 'supreme'
             }"
+            aria-hidden="true"
           >
             {{ getItemById(item.itemId)?.name }}
           </div>
-          <div class="text-xs text-muted">×{{ item.quantity }}</div>
+          <div class="text-xs text-muted" aria-hidden="true">×{{ item.quantity }}</div>
         </div>
 
         <!-- 空格子 -->
@@ -73,21 +80,27 @@
         <Package :size="24" />
         <p class="text-xs mt-1">{{ $t('inventoryView.empty_pack') }}</p>
       </div>
-    </template>
+    </section>
 
     <!-- 临时背包页 -->
-    <template v-if="tab === 'temp'">
+    <section v-if="tab === 'temp'" aria-labelledby="tab-temp-title">
+      <h2 id="tab-temp-title" class="sr-only">{{ $t('inventoryView.tab_temp') }}</h2>
       <div v-if="inventoryStore.tempItems.length > 0">
         <div class="flex items-center justify-between mb-1.5">
           <span class="text-[10px] text-muted">{{ $t('inventoryView.temp_desc') }}</span>
           <Button v-if="!inventoryStore.isFull" class="py-0 px-1.5" @click="handleMoveAllFromTemp">{{ $t('inventoryView.btn_all_retrieve') }}</Button>
         </div>
-        <div class="grid grid-cols-3 md:grid-cols-5 gap-1.5">
+        <div class="grid grid-cols-3 md:grid-cols-5 gap-1.5" role="list">
           <div
             v-for="(item, idx) in inventoryStore.tempItems"
             :key="'temp-' + idx"
-            class="border border-danger/30 rounded-xs p-1.5 text-center cursor-pointer hover:bg-danger/5 transition-colors"
+            class="border border-danger/30 rounded-xs p-1.5 text-center cursor-pointer hover:bg-danger/5 transition-colors focus:outline-none focus:ring-2 focus:ring-accent/40"
+            role="button"
+            tabindex="0"
+            :aria-label="`${getItemById(item.itemId)?.name} x${item.quantity}. ${item.quality !== 'normal' ? QUALITY_NAMES[item.quality] : ''}`"
             @click="activeTempIdx = idx"
+             @keydown.enter.prevent="activeTempIdx = idx"
+            @keydown.space.prevent="activeTempIdx = idx"
           >
             <div
               class="text-xs truncate"
@@ -96,10 +109,11 @@
                 'text-quality-excellent': item.quality === 'excellent',
                 'text-quality-supreme': item.quality === 'supreme'
               }"
+              aria-hidden="true"
             >
               {{ getItemById(item.itemId)?.name }}
             </div>
-            <div class="text-xs text-muted">×{{ item.quantity }}</div>
+            <div class="text-xs text-muted" aria-hidden="true">×{{ item.quantity }}</div>
           </div>
 
           <!-- 空格子 -->
@@ -116,10 +130,11 @@
         <Archive :size="24" />
         <p class="text-xs mt-1">{{ $t('inventoryView.empty_temp_pack') }}</p>
       </div>
-    </template>
+    </section>
 
     <!-- 装备页 -->
-    <template v-if="tab === 'tools'">
+    <section v-if="tab === 'tools'" aria-labelledby="tab-tools-title">
+      <h2 id="tab-tools-title" class="sr-only">{{ $t('inventoryView.tab_tools') }}</h2>
       <!-- kế hoạch按钮 -->
       <div class="flex items-center justify-end mb-1.5 space-x-1.5">
         <span v-if="activePresetName" class="text-[10px] text-success truncate">{{ activePresetName }}</span>
@@ -128,19 +143,24 @@
       </div>
       <div class="border border-accent/20 rounded-xs p-2 mb-3">
         <p class="text-xs text-muted mb-1">{{ $t('inventoryView.weapon_title') }}</p>
-        <div class="flex flex-col space-y-1 max-h-40 overflow-y-auto">
+        <div class="flex flex-col space-y-1 max-h-40 overflow-y-auto" role="list">
           <div
             v-for="(weapon, idx) in inventoryStore.ownedWeapons"
             :key="idx"
-            class="flex items-center justify-between border rounded-xs px-2 py-1 mr-1 cursor-pointer hover:bg-accent/5"
+            class="flex items-center justify-between border rounded-xs px-2 py-1 mr-1 cursor-pointer hover:bg-accent/5 focus:outline-none focus:ring-2 focus:ring-accent/40"
             :class="idx === inventoryStore.equippedWeaponIndex ? 'border-accent/30' : 'border-accent/10'"
+            role="button"
+            tabindex="0"
+            :aria-label="`${getWeaponDisplayName(weapon.defId, weapon.enchantmentId)}. ${idx === inventoryStore.equippedWeaponIndex ? $t('inventoryView.equipped') : getWeaponSellPrice(weapon.defId, weapon.enchantmentId) + $t('status_bar.money_unit')}`"
             @click="activeWeaponIdx = idx"
+            @keydown.enter.prevent="activeWeaponIdx = idx"
+            @keydown.space.prevent="activeWeaponIdx = idx"
           >
-            <span class="text-xs" :class="idx === inventoryStore.equippedWeaponIndex ? 'text-accent' : ''">
+            <span class="text-xs" :class="idx === inventoryStore.equippedWeaponIndex ? 'text-accent' : ''" aria-hidden="true">
               {{ getWeaponDisplayName(weapon.defId, weapon.enchantmentId) }}
             </span>
-            <span v-if="idx === inventoryStore.equippedWeaponIndex" class="text-xs text-accent">{{ $t('inventoryView.equipped') }}</span>
-            <span v-else class="text-xs text-muted">{{ getWeaponSellPrice(weapon.defId, weapon.enchantmentId) }}{{ $t('status_bar.money_unit') }}</span>
+            <span v-if="idx === inventoryStore.equippedWeaponIndex" class="text-xs text-accent" aria-hidden="true">{{ $t('inventoryView.equipped') }}</span>
+            <span v-else class="text-xs text-muted" aria-hidden="true">{{ getWeaponSellPrice(weapon.defId, weapon.enchantmentId) }}{{ $t('status_bar.money_unit') }}</span>
           </div>
         </div>
       </div>
@@ -157,15 +177,20 @@
             </p>
           </div>
           <!-- 拥有的帽子列表 -->
-          <div class="max-h-40 overflow-y-auto flex flex-col space-y-1">
+          <div class="max-h-40 overflow-y-auto flex flex-col space-y-1" role="list">
             <div
               v-for="(hat, idx) in inventoryStore.ownedHats"
               :key="idx"
-              class="flex items-center justify-between border rounded-xs px-2 py-1 mr-1 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border rounded-xs px-2 py-1 mr-1 cursor-pointer hover:bg-accent/5 focus:outline-none focus:ring-2 focus:ring-accent/40"
               :class="inventoryStore.equippedHatIndex === idx ? 'border-accent/30' : 'border-accent/10'"
+              role="button"
+              tabindex="0"
+              :aria-label="`${getHatById(hat.defId)?.name ?? hat.defId}. ${getHatById(hat.defId)?.description}. ${inventoryStore.equippedHatIndex === idx ? $t('inventoryView.equipped') : ''}`"
               @click="activeHatIdx = idx"
+              @keydown.enter.prevent="activeHatIdx = idx"
+              @keydown.space.prevent="activeHatIdx = idx"
             >
-              <div class="min-w-0">
+              <div class="min-w-0" aria-hidden="true">
                 <span class="text-xs" :class="inventoryStore.equippedHatIndex === idx ? 'text-accent' : ''">
                   {{ getHatById(hat.defId)?.name ?? hat.defId }}
                 </span>
@@ -196,15 +221,20 @@
             </p>
           </div>
           <!-- 拥有的鞋子列表 -->
-          <div class="max-h-40 overflow-y-auto flex flex-col space-y-1">
+          <div class="max-h-40 overflow-y-auto flex flex-col space-y-1" role="list">
             <div
               v-for="(shoe, idx) in inventoryStore.ownedShoes"
               :key="idx"
-              class="flex items-center justify-between border rounded-xs px-2 py-1 mr-1 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border rounded-xs px-2 py-1 mr-1 cursor-pointer hover:bg-accent/5 focus:outline-none focus:ring-2 focus:ring-accent/40"
               :class="inventoryStore.equippedShoeIndex === idx ? 'border-accent/30' : 'border-accent/10'"
+              role="button"
+              tabindex="0"
+              :aria-label="`${getShoeById(shoe.defId)?.name ?? shoe.defId}. ${getShoeById(shoe.defId)?.description}. ${inventoryStore.equippedShoeIndex === idx ? $t('inventoryView.equipped') : ''}`"
               @click="activeShoeIdx = idx"
+              @keydown.enter.prevent="activeShoeIdx = idx"
+              @keydown.space.prevent="activeShoeIdx = idx"
             >
-              <div class="min-w-0">
+              <div class="min-w-0" aria-hidden="true">
                 <span class="text-xs" :class="inventoryStore.equippedShoeIndex === idx ? 'text-accent' : ''">
                   {{ getShoeById(shoe.defId)?.name ?? shoe.defId }}
                 </span>
@@ -243,15 +273,20 @@
             </div>
           </div>
           <!-- 拥有的戒指列表 -->
-          <div class="max-h-40 overflow-y-auto flex flex-col space-y-1">
+          <div class="max-h-40 overflow-y-auto flex flex-col space-y-1" role="list">
             <div
               v-for="(ring, idx) in inventoryStore.ownedRings"
               :key="idx"
-              class="flex items-center justify-between border rounded-xs px-2 py-1 mr-1 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border rounded-xs px-2 py-1 mr-1 cursor-pointer hover:bg-accent/5 focus:outline-none focus:ring-2 focus:ring-accent/40"
               :class="isRingEquipped(idx) ? 'border-accent/30' : 'border-accent/10'"
+              role="button"
+              tabindex="0"
+              :aria-label="`${getRingById(ring.defId)?.name ?? ring.defId}. ${getRingById(ring.defId)?.description}. ${inventoryStore.equippedRingSlot1 === idx ? $t('inventoryView.slot1') : inventoryStore.equippedRingSlot2 === idx ? $t('inventoryView.slot2') : ''}`"
               @click="activeRingIdx = idx"
+              @keydown.enter.prevent="activeRingIdx = idx"
+              @keydown.space.prevent="activeRingIdx = idx"
             >
-              <div class="min-w-0">
+              <div class="min-w-0" aria-hidden="true">
                 <span class="text-xs" :class="isRingEquipped(idx) ? 'text-accent' : ''">
                   {{ getRingById(ring.defId)?.name ?? ring.defId }}
                 </span>
@@ -306,7 +341,7 @@
           </div>
         </div>
       </div>
-    </template>
+    </section>
 
     <!-- 装备kế hoạch弹窗 -->
     <Transition name="panel-fade">
@@ -382,12 +417,12 @@
           </button>
           <p class="text-sm text-accent mb-2">{{ $t('inventoryView.filter_title') }}</p>
           <p class="text-[10px] text-muted mb-2">{{ $t('inventoryView.filter_desc') }}</p>
-          <div class="grid grid-cols-3 gap-1.5 mb-3" role="group" aria-label="Lọc theo loại vật phẩm">
+          <div class="grid grid-cols-3 gap-1.5 mb-3" aria-label="Lọc theo loại vật phẩm" role="list">
             <div
-              v-for="cat in FILTER_CATEGORIES"
+                v-for="cat in FILTER_CATEGORIES"
               :key="cat"
-              class="border rounded-xs px-1.5 py-1 text-center text-xs cursor-pointer transition-colors"
-              :class="tempFilter.has(cat) ? 'border-accent/50 bg-accent/10 text-accent' : 'border-accent/20 text-muted hover:bg-accent/5'"
+              class="border rounded-xs px-1.5 py-1 text-center text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 transition-colors"
+                :class="tempFilter.has(cat) ? 'border-accent/50 bg-accent/10 text-accent' : 'border-accent/20 text-muted hover:bg-accent/5'"
               role="checkbox"
               :aria-checked="tempFilter.has(cat)"
               tabindex="0"
@@ -451,7 +486,7 @@
               </span>
             </div>
           </div>
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <Button
               class="w-full justify-center"
               :class="inventoryStore.isFull ? 'opacity-50' : ''"
@@ -531,7 +566,7 @@
             </div>
           </div>
 
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <Button
               class="w-full justify-center"
               :icon="activeItem.locked ? LockOpen : Lock"
@@ -623,7 +658,7 @@
               <span class="text-xs text-accent">{{ activeWeaponPrice }}{{ $t('status_bar.money_unit') }}</span>
             </div>
           </div>
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <Button v-if="activeWeaponIdx !== inventoryStore.equippedWeaponIndex" class="w-full justify-center" @click="handleEquipWeapon">
               {{ $t('inventoryView.btn_equip') }}
             </Button>
@@ -667,7 +702,7 @@
               <span class="text-xs text-accent">{{ activeRingDef.sellPrice }}{{ $t('status_bar.money_unit') }}</span>
             </div>
           </div>
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <div class="flex space-x-1.5">
               <Button
                 class="flex-1 justify-center"
@@ -719,7 +754,7 @@
               <span class="text-xs text-accent">{{ activeHatDef.sellPrice }}{{ $t('status_bar.money_unit') }}</span>
             </div>
           </div>
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <Button class="w-full justify-center" @click="handleToggleHatFromPopup">
               {{ inventoryStore.equippedHatIndex === activeHatIdx ? $t('inventoryView.btn_unequip') : $t('inventoryView.btn_equip') }}
             </Button>
@@ -756,7 +791,7 @@
               <span class="text-xs text-accent">{{ activeShoeDef.sellPrice }}{{ $t('status_bar.money_unit') }}</span>
             </div>
           </div>
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <Button class="w-full justify-center" @click="handleToggleShoeFromPopup">
               {{ inventoryStore.equippedShoeIndex === activeShoeIdx ? $t('inventoryView.btn_unequip') : $t('inventoryView.btn_equip') }}
             </Button>
@@ -767,7 +802,7 @@
         </div>
       </div>
     </Transition>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

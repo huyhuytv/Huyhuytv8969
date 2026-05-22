@@ -48,7 +48,7 @@
               {{ $t('shopView.merchant_traveling') }}
             </h4>
             <p class="text-muted text-xs mb-2">{{ $t('shopView.merchant_traveling_badge') }}</p>
-            <div class="flex flex-col space-y-2">
+            <div class="flex flex-col space-y-2" role="list">
               <div
                 v-for="item in shopStore.travelingStock"
                 :key="item.itemId"
@@ -78,7 +78,7 @@
           </div>
 
           <!-- 六大商铺卡片 -->
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
               v-for="shop in SHOPS"
               :key="shop.id"
@@ -105,12 +105,38 @@
             <Sprout :size="14" class="inline" />
             {{ $t('shopView.wanwupu_seasonal_seed') }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="seed in shopStore.availableSeeds"
+                v-for="seed in shopStore.availableSeeds"
               :key="seed.seedId"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  getLocalizedItemName(seed.cropName + 'hạt giống', seed.seedId),
+                  getLocalizedSeedDesc(seed),
+                  discounted(seed.price),
+                  () => handleBuySeed(seed.seedId),
+                  () => playerStore.money >= discounted(seed.price),
+                  count => handleBatchBuySeed(seed.seedId, count),
+                  () => getMaxBuyable(discounted(seed.price)),
+                  seed.seedId
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  getLocalizedItemName(seed.cropName + 'hạt giống', seed.seedId),
+                  getLocalizedSeedDesc(seed),
+                  discounted(seed.price),
+                  () => handleBuySeed(seed.seedId),
+                  () => playerStore.money >= discounted(seed.price),
+                  count => handleBatchBuySeed(seed.seedId, count),
+                  () => getMaxBuyable(discounted(seed.price)),
+                  seed.seedId
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   getLocalizedItemName(seed.cropName + 'hạt giống', seed.seedId),
                   getLocalizedSeedDesc(seed),
@@ -145,12 +171,32 @@
             <Package :size="14" class="inline" />
             {{ $t('shopView.wanwupu_grocery') }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <!-- Mở rộng ba lô -->
             <div
-              v-if="inventoryStore.capacity < 60"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+                v-if="inventoryStore.capacity < 60"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBuyModal(
+                  getLocalizedItemName('Mở rộng ba lô', 'expand_bag'),
+                  getLocalizedItemDesc(`hiện tại${inventoryStore.capacity}lưới → ${inventoryStore.capacity + 4}lưới`, 'expand_bag'),
+                  discounted(bagPrice),
+                  handleBuyBag,
+                  () => playerStore.money >= discounted(bagPrice)
+                )
+              "
+                @keydown.enter.prevent="
+                openBuyModal(
+                  getLocalizedItemName('Mở rộng ba lô', 'expand_bag'),
+                  getLocalizedItemDesc(`hiện tại${inventoryStore.capacity}lưới → ${inventoryStore.capacity + 4}lưới`, 'expand_bag'),
+                  discounted(bagPrice),
+                  handleBuyBag,
+                  () => playerStore.money >= discounted(bagPrice)
+                )
+              "
+                @keydown.space.prevent="
                 openBuyModal(
                   getLocalizedItemName('Mở rộng ba lô', 'expand_bag'),
                   getLocalizedItemDesc(`hiện tại${inventoryStore.capacity}lưới → ${inventoryStore.capacity + 4}lưới`, 'expand_bag'),
@@ -168,9 +214,29 @@
             </div>
 
             <div
-              v-if="warehouseStore.unlocked && warehouseStore.maxChests < warehouseStore.MAX_CHESTS_CAP"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+                v-if="warehouseStore.unlocked && warehouseStore.maxChests < warehouseStore.MAX_CHESTS_CAP"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBuyModal(
+                  getLocalizedItemName('Mở rộng kho hàng', 'expand_warehouse'),
+                  getLocalizedItemDesc(`khe ngực ${warehouseStore.maxChests} → ${warehouseStore.maxChests + 1}`, 'expand_warehouse'),
+                  discounted(warehouseExpandPrice),
+                  handleBuyWarehouseExpand,
+                  () => playerStore.money >= discounted(warehouseExpandPrice)
+                )
+              "
+                @keydown.enter.prevent="
+                openBuyModal(
+                  getLocalizedItemName('Mở rộng kho hàng', 'expand_warehouse'),
+                  getLocalizedItemDesc(`khe ngực ${warehouseStore.maxChests} → ${warehouseStore.maxChests + 1}`, 'expand_warehouse'),
+                  discounted(warehouseExpandPrice),
+                  handleBuyWarehouseExpand,
+                  () => playerStore.money >= discounted(warehouseExpandPrice)
+                )
+              "
+                @keydown.space.prevent="
                 openBuyModal(
                   getLocalizedItemName('Mở rộng kho hàng', 'expand_warehouse'),
                   getLocalizedItemDesc(`khe ngực ${warehouseStore.maxChests} → ${warehouseStore.maxChests + 1}`, 'expand_warehouse'),
@@ -189,9 +255,29 @@
 
             <!-- mở rộng trang trại -->
             <div
-              v-if="farmExpandInfo"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+                v-if="farmExpandInfo"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBuyModal(
+                  getLocalizedItemName('mở rộng trang trại', 'expand_farm'),
+                  `${farmStore.farmSize}×${farmStore.farmSize} → ${farmExpandInfo.newSize}×${farmExpandInfo.newSize}`,
+                  discounted(farmExpandInfo.price),
+                  handleBuyFarmExpand,
+                  () => playerStore.money >= discounted(farmExpandInfo!.price)
+                )
+              "
+                @keydown.enter.prevent="
+                openBuyModal(
+                  getLocalizedItemName('mở rộng trang trại', 'expand_farm'),
+                  `${farmStore.farmSize}×${farmStore.farmSize} → ${farmExpandInfo.newSize}×${farmExpandInfo.newSize}`,
+                  discounted(farmExpandInfo.price),
+                  handleBuyFarmExpand,
+                  () => playerStore.money >= discounted(farmExpandInfo!.price)
+                )
+              "
+                @keydown.space.prevent="
                 openBuyModal(
                   getLocalizedItemName('mở rộng trang trại', 'expand_farm'),
                   `${farmStore.farmSize}×${farmStore.farmSize} → ${farmExpandInfo.newSize}×${farmExpandInfo.newSize}`,
@@ -212,10 +298,36 @@
 
             <!-- cây non -->
             <div
-              v-for="tree in FRUIT_TREE_DEFS"
+                v-for="tree in FRUIT_TREE_DEFS"
               :key="tree.saplingId"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  getLocalizedItemName(tree.name + 'cây giống', tree.saplingId),
+                  getLocalizedItemDesc(`28trưởng thành · ${seasonName(tree.fruitSeason)}Sản phẩm theo mùa${tree.fruitName}`, tree.saplingId),
+                  discounted(tree.saplingPrice),
+                  () => handleBuySapling(tree.saplingId, tree.saplingPrice, tree.name),
+                  () => playerStore.money >= discounted(tree.saplingPrice),
+                  count => handleBatchBuySapling(tree.saplingId, tree.saplingPrice, tree.name, count),
+                  () => getMaxBuyable(discounted(tree.saplingPrice)),
+                  tree.saplingId
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  getLocalizedItemName(tree.name + 'cây giống', tree.saplingId),
+                  getLocalizedItemDesc(`28trưởng thành · ${seasonName(tree.fruitSeason)}Sản phẩm theo mùa${tree.fruitName}`, tree.saplingId),
+                  discounted(tree.saplingPrice),
+                  () => handleBuySapling(tree.saplingId, tree.saplingPrice, tree.name),
+                  () => playerStore.money >= discounted(tree.saplingPrice),
+                  count => handleBatchBuySapling(tree.saplingId, tree.saplingPrice, tree.name, count),
+                  () => getMaxBuyable(discounted(tree.saplingPrice)),
+                  tree.saplingId
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   getLocalizedItemName(tree.name + 'cây giống', tree.saplingId),
                   getLocalizedItemDesc(`28trưởng thành · ${seasonName(tree.fruitSeason)}Sản phẩm theo mùa${tree.fruitName}`, tree.saplingId),
@@ -237,8 +349,34 @@
 
             <!-- cỏ khô -->
             <div
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  getLocalizedItemName('cỏ khô', 'hay'),
+                  getLocalizedItemDesc('Cho gia súc ăn', 'hay'),
+                  discounted(HAY_PRICE),
+                  handleBuyHay,
+                  () => playerStore.money >= discounted(HAY_PRICE),
+                  count => handleBatchBuyItem('hay', HAY_PRICE, 'cỏ khô', count),
+                  () => getMaxBuyable(discounted(HAY_PRICE)),
+                  'hay'
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  getLocalizedItemName('cỏ khô', 'hay'),
+                  getLocalizedItemDesc('Cho gia súc ăn', 'hay'),
+                  discounted(HAY_PRICE),
+                  handleBuyHay,
+                  () => playerStore.money >= discounted(HAY_PRICE),
+                  count => handleBatchBuyItem('hay', HAY_PRICE, 'cỏ khô', count),
+                  () => getMaxBuyable(discounted(HAY_PRICE)),
+                  'hay'
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   getLocalizedItemName('cỏ khô', 'hay'),
                   getLocalizedItemDesc('Cho gia súc ăn', 'hay'),
@@ -260,8 +398,34 @@
 
             <!-- gỗ -->
             <div
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  getLocalizedItemName('gỗ', 'wood'),
+                  getLocalizedItemDesc('Vật liệu cơ bản cho xây dựng và gia công', 'wood'),
+                  discounted(WOOD_PRICE),
+                  () => handleBuyItem('wood', WOOD_PRICE, 'gỗ'),
+                  () => playerStore.money >= discounted(WOOD_PRICE),
+                  count => handleBatchBuyItem('wood', WOOD_PRICE, 'gỗ', count),
+                  () => getMaxBuyable(discounted(WOOD_PRICE)),
+                  'wood'
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  getLocalizedItemName('gỗ', 'wood'),
+                  getLocalizedItemDesc('Vật liệu cơ bản cho xây dựng và gia công', 'wood'),
+                  discounted(WOOD_PRICE),
+                  () => handleBuyItem('wood', WOOD_PRICE, 'gỗ'),
+                  () => playerStore.money >= discounted(WOOD_PRICE),
+                  count => handleBatchBuyItem('wood', WOOD_PRICE, 'gỗ', count),
+                  () => getMaxBuyable(discounted(WOOD_PRICE)),
+                  'wood'
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   getLocalizedItemName('gỗ', 'wood'),
                   getLocalizedItemDesc('Vật liệu cơ bản cho xây dựng và gia công', 'wood'),
@@ -283,8 +447,34 @@
 
             <!-- vật tổ mưa -->
             <div
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+                class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  getLocalizedItemName('vật tổ mưa', 'rain_totem'),
+                  getLocalizedItemDesc('Hãy dùng nó để làm mưa vào ngày mai', 'rain_totem'),
+                  discounted(RAIN_TOTEM_PRICE),
+                  () => handleBuyItem('rain_totem', RAIN_TOTEM_PRICE, 'vật tổ mưa'),
+                  () => playerStore.money >= discounted(RAIN_TOTEM_PRICE),
+                  count => handleBatchBuyItem('rain_totem', RAIN_TOTEM_PRICE, 'vật tổ mưa', count),
+                  () => getMaxBuyable(discounted(RAIN_TOTEM_PRICE)),
+                  'rain_totem'
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  getLocalizedItemName('vật tổ mưa', 'rain_totem'),
+                  getLocalizedItemDesc('Hãy dùng nó để làm mưa vào ngày mai', 'rain_totem'),
+                  discounted(RAIN_TOTEM_PRICE),
+                  () => handleBuyItem('rain_totem', RAIN_TOTEM_PRICE, 'vật tổ mưa'),
+                  () => playerStore.money >= discounted(RAIN_TOTEM_PRICE),
+                  count => handleBatchBuyItem('rain_totem', RAIN_TOTEM_PRICE, 'vật tổ mưa', count),
+                  () => getMaxBuyable(discounted(RAIN_TOTEM_PRICE)),
+                  'rain_totem'
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   getLocalizedItemName('vật tổ mưa', 'rain_totem'),
                   getLocalizedItemDesc('Hãy dùng nó để làm mưa vào ngày mai', 'rain_totem'),
@@ -310,12 +500,38 @@
         <template v-else-if="shopStore.currentShopId === 'tiejiangpu'">
           <ShopHeader :name="getLocalizedShopName('tiejiangpu', 'Lò rèn')" :npc="getLocalizedNpcName('Tôn Thiết Giang')" />
 
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="item in shopStore.blacksmithItems"
+                v-for="item in shopStore.blacksmithItems"
               :key="item.itemId"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  item.name,
+                  item.description,
+                  discounted(item.price),
+                  () => handleBuyItem(item.itemId, item.price, item.name),
+                  () => playerStore.money >= discounted(item.price),
+                  count => handleBatchBuyItem(item.itemId, item.price, item.name, count),
+                  () => getMaxBuyable(discounted(item.price)),
+                  item.itemId
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  item.name,
+                  item.description,
+                  discounted(item.price),
+                  () => handleBuyItem(item.itemId, item.price, item.name),
+                  () => playerStore.money >= discounted(item.price),
+                  count => handleBatchBuyItem(item.itemId, item.price, item.name, count),
+                  () => getMaxBuyable(discounted(item.price)),
+                  item.itemId
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   item.name,
                   item.description,
@@ -341,13 +557,17 @@
             <CircleDot :size="14" class="inline" />
             {{ $i18n.locale === 'vi' ? 'Ghép Nhẫn' : 'Tổng hợp vòng' }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="ring in craftableRings"
+                v-for="ring in craftableRings"
               :key="ring.id"
-              class="flex items-center justify-between border rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               :class="canCraftRing(ring) ? 'border-success/50 bg-success/5' : 'border-accent/20'"
               @click="openRingModal(ring)"
+                @keydown.enter.prevent="openRingModal(ring)"
+                @keydown.space.prevent="openRingModal(ring)"
             >
               <div>
                 <p class="text-sm">
@@ -369,13 +589,17 @@
             <Crown :size="14" class="inline" />
             {{ $i18n.locale === 'vi' ? 'Ghép Mũ' : 'tổng hợp mũ' }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="hat in CRAFTABLE_HATS"
+                v-for="hat in CRAFTABLE_HATS"
               :key="hat.id"
-              class="flex items-center justify-between border rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               :class="canCraftHat(hat) ? 'border-success/50 bg-success/5' : 'border-accent/20'"
               @click="openHatCraftModal(hat)"
+                @keydown.enter.prevent="openHatCraftModal(hat)"
+                @keydown.space.prevent="openHatCraftModal(hat)"
             >
               <div>
                 <p class="text-sm">
@@ -393,13 +617,17 @@
             <Footprints :size="14" class="inline" />
             {{ $i18n.locale === 'vi' ? 'Ghép Giày' : 'giày tổng hợp' }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="shoe in CRAFTABLE_SHOES"
+                v-for="shoe in CRAFTABLE_SHOES"
               :key="shoe.id"
-              class="flex items-center justify-between border rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               :class="canCraftShoe(shoe) ? 'border-success/50 bg-success/5' : 'border-accent/20'"
               @click="openShoeCraftModal(shoe)"
+                @keydown.enter.prevent="openShoeCraftModal(shoe)"
+                @keydown.space.prevent="openShoeCraftModal(shoe)"
             >
               <div>
                 <p class="text-sm">
@@ -422,12 +650,16 @@
             <Sword :size="14" class="inline" />
             {{ $i18n.locale === 'vi' ? 'Vũ khí' : 'vũ khí' }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="w in SHOP_WEAPONS"
+                v-for="w in SHOP_WEAPONS"
               :key="w.id"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="openWeaponModal(w)"
+                @keydown.enter.prevent="openWeaponModal(w)"
+                @keydown.space.prevent="openWeaponModal(w)"
             >
               <div>
                 <p class="text-sm">
@@ -450,12 +682,38 @@
             <Fish :size="14" class="inline" />
             {{ $i18n.locale === 'vi' ? 'Mồi câu' : 'Mồi câu' }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="b in shopStore.shopBaits"
+                v-for="b in shopStore.shopBaits"
               :key="b.id"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  b.name,
+                  b.description,
+                  discounted(b.price),
+                  () => handleBuyItem(b.id, b.price, b.name),
+                  () => playerStore.money >= discounted(b.price),
+                  count => handleBatchBuyItem(b.id, b.price, b.name, count),
+                  () => getMaxBuyable(discounted(b.price)),
+                  b.id
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  b.name,
+                  b.description,
+                  discounted(b.price),
+                  () => handleBuyItem(b.id, b.price, b.name),
+                  () => playerStore.money >= discounted(b.price),
+                  count => handleBatchBuyItem(b.id, b.price, b.name, count),
+                  () => getMaxBuyable(discounted(b.price)),
+                  b.id
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   b.name,
                   b.description,
@@ -481,12 +739,38 @@
             <Fish :size="14" class="inline" />
             {{ $i18n.locale === 'vi' ? 'Phao câu' : 'Phao câu' }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="t in shopStore.shopTackles"
+                v-for="t in shopStore.shopTackles"
               :key="t.id"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  t.name,
+                  t.description,
+                  discounted(t.price),
+                  () => handleBuyItem(t.id, t.price, t.name),
+                  () => playerStore.money >= discounted(t.price),
+                  count => handleBatchBuyItem(t.id, t.price, t.name, count),
+                  () => getMaxBuyable(discounted(t.price)),
+                  t.id
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  t.name,
+                  t.description,
+                  discounted(t.price),
+                  () => handleBuyItem(t.id, t.price, t.name),
+                  () => playerStore.money >= discounted(t.price),
+                  count => handleBatchBuyItem(t.id, t.price, t.name, count),
+                  () => getMaxBuyable(discounted(t.price)),
+                  t.id
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   t.name,
                   t.description,
@@ -512,12 +796,38 @@
             <Fish :size="14" class="inline" />
             {{ $i18n.locale === 'vi' ? 'Khác' : 'Khác' }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="item in shopStore.fishingShopItems"
+                v-for="item in shopStore.fishingShopItems"
               :key="item.itemId"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  item.name,
+                  item.description,
+                  discounted(item.price),
+                  () => handleBuyItem(item.itemId, item.price, item.name),
+                  () => playerStore.money >= discounted(item.price),
+                  count => handleBatchBuyItem(item.itemId, item.price, item.name, count),
+                  () => getMaxBuyable(discounted(item.price)),
+                  item.itemId
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  item.name,
+                  item.description,
+                  discounted(item.price),
+                  () => handleBuyItem(item.itemId, item.price, item.name),
+                  () => playerStore.money >= discounted(item.price),
+                  count => handleBatchBuyItem(item.itemId, item.price, item.name, count),
+                  () => getMaxBuyable(discounted(item.price)),
+                  item.itemId
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   item.name,
                   item.description,
@@ -548,12 +858,38 @@
             <Leaf :size="14" class="inline" />
             {{ $i18n.locale === 'vi' ? 'Phân bón' : 'phân bón' }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="f in shopStore.shopFertilizers"
+                v-for="f in shopStore.shopFertilizers"
               :key="f.id"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  f.name,
+                  f.description,
+                  discounted(f.price),
+                  () => handleBuyItem(f.id, f.price, f.name),
+                  () => playerStore.money >= discounted(f.price),
+                  count => handleBatchBuyItem(f.id, f.price, f.name, count),
+                  () => getMaxBuyable(discounted(f.price)),
+                  f.id
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  f.name,
+                  f.description,
+                  discounted(f.price),
+                  () => handleBuyItem(f.id, f.price, f.name),
+                  () => playerStore.money >= discounted(f.price),
+                  count => handleBatchBuyItem(f.id, f.price, f.name, count),
+                  () => getMaxBuyable(discounted(f.price)),
+                  f.id
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   f.name,
                   f.description,
@@ -579,12 +915,38 @@
             <Sprout :size="14" class="inline" />
             {{ $i18n.locale === 'vi' ? 'Thảo dược' : 'thuốc thảo dược' }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="item in shopStore.apothecaryItems"
+                v-for="item in shopStore.apothecaryItems"
               :key="item.itemId"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  item.name,
+                  item.description,
+                  discounted(item.price),
+                  () => handleBuyItem(item.itemId, item.price, item.name),
+                  () => playerStore.money >= discounted(item.price),
+                  count => handleBatchBuyItem(item.itemId, item.price, item.name, count),
+                  () => getMaxBuyable(discounted(item.price)),
+                  item.itemId
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  item.name,
+                  item.description,
+                  discounted(item.price),
+                  () => handleBuyItem(item.itemId, item.price, item.name),
+                  () => playerStore.money >= discounted(item.price),
+                  count => handleBatchBuyItem(item.itemId, item.price, item.name, count),
+                  () => getMaxBuyable(discounted(item.price)),
+                  item.itemId
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   item.name,
                   item.description,
@@ -610,12 +972,38 @@
         <template v-else-if="shopStore.currentShopId === 'chouduanzhuang'">
           <ShopHeader :name="getLocalizedShopName('nishangge', 'Tiệm lụa')" :npc="getLocalizedNpcName('susu')" />
 
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="item in shopStore.textileItems"
+                v-for="item in shopStore.textileItems"
               :key="item.itemId"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="
+                openBatchBuyModal(
+                  item.name,
+                  item.description,
+                  discounted(item.price),
+                  () => handleBuyItem(item.itemId, item.price, item.name),
+                  () => playerStore.money >= discounted(item.price),
+                  count => handleBatchBuyItem(item.itemId, item.price, item.name, count),
+                  () => getMaxBuyable(discounted(item.price)),
+                  item.itemId
+                )
+              "
+                @keydown.enter.prevent="
+                openBatchBuyModal(
+                  item.name,
+                  item.description,
+                  discounted(item.price),
+                  () => handleBuyItem(item.itemId, item.price, item.name),
+                  () => playerStore.money >= discounted(item.price),
+                  count => handleBatchBuyItem(item.itemId, item.price, item.name, count),
+                  () => getMaxBuyable(discounted(item.price)),
+                  item.itemId
+                )
+              "
+                @keydown.space.prevent="
                 openBatchBuyModal(
                   item.name,
                   item.description,
@@ -641,12 +1029,16 @@
             <Crown :size="14" class="inline" />
             {{ $i18n.locale === 'vi' ? 'Mũ' : 'Mũ' }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="hat in SHOP_HATS"
+                v-for="hat in SHOP_HATS"
               :key="hat.id"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="openHatShopModal(hat)"
+                @keydown.enter.prevent="openHatShopModal(hat)"
+                @keydown.space.prevent="openHatShopModal(hat)"
             >
               <div>
                 <p class="text-sm">
@@ -664,12 +1056,16 @@
             <Footprints :size="14" class="inline" />
             {{ $i18n.locale === 'vi' ? 'Giày' : 'Giày' }}
           </h4>
-          <div class="flex flex-col space-y-2">
+          <div class="flex flex-col space-y-2" role="list">
             <div
-              v-for="shoe in SHOP_SHOES"
+                v-for="shoe in SHOP_SHOES"
               :key="shoe.id"
-              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+              class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
               @click="openShoeShopModal(shoe)"
+                @keydown.enter.prevent="openShoeShopModal(shoe)"
+                @keydown.space.prevent="openShoeShopModal(shoe)"
             >
               <div>
                 <p class="text-sm">
@@ -712,7 +1108,7 @@
         <!-- Trích dẫn hôm nay -->
         <div class="border border-accent/30 rounded-xs p-2 mb-3">
           <p class="text-[10px] text-muted mb-1">{{ $i18n.locale === 'vi' ? 'Thị trường hôm nay' : 'Trích dẫn hôm nay' }}</p>
-          <div class="grid grid-cols-4">
+          <div class="grid grid-cols-4" role="list"> role="list"
             <span v-for="m in todayMarket" :key="m.category" class="text-[10px] whitespace-nowrap mt-2">
               <span class="text-muted">{{ MARKET_CATEGORY_NAMES[m.category] }}</span>
               <span v-if="m.trend === 'stable'" class="text-muted/40 ml-0.5">—</span>
@@ -722,12 +1118,16 @@
             </span>
           </div>
         </div>
-        <div class="flex flex-col space-y-2">
+        <div class="flex flex-col space-y-2" role="list">
           <div
-            v-for="item in sellableItems"
+                v-for="item in sellableItems"
             :key="item.originalIndex"
-            class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer hover:bg-accent/5"
+            class="flex items-center justify-between border border-accent/20 rounded-xs px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 hover:bg-accent/5"
+                role="button"
+                tabindex="0"
             @click="openSellModal(item.itemId, item.quality, item.originalIndex)"
+                @keydown.enter.prevent="openSellModal(item.itemId, item.quality, item.originalIndex)"
+                @keydown.space.prevent="openSellModal(item.itemId, item.quality, item.originalIndex)"
           >
             <div>
               <span class="text-sm" :class="qualityTextClass(item.quality)">{{ item.def?.name }}</span>
@@ -768,12 +1168,12 @@
           </button>
           <p class="text-sm text-accent mb-2">{{ $i18n.locale === 'vi' ? 'Lọc bán' : 'Cần bán bộ lọc' }}</p>
           <p class="text-[10px] text-muted mb-2">{{ $i18n.locale === 'vi' ? 'Chọn phân loại, không chọn thì sẽ hiển thị tất cả' : 'Chọn các danh mục sẽ được hiển thị. Nếu không được chọn, tất cả sẽ được hiển thị.' }}</p>
-          <div class="grid grid-cols-3 gap-1.5 mb-3" role="group" :aria-label="$i18n.locale === 'vi' ? 'Bản lọc bán' : 'Cần bán bộ lọc'">
+          <div class="grid grid-cols-3 gap-1.5 mb-3" :aria-label="$i18n.locale === 'vi' ? 'Bản lọc bán' : 'Cần bán bộ lọc'" role="list">
             <div
-              v-for="cat in SELL_FILTER_CATEGORIES"
+                v-for="cat in SELL_FILTER_CATEGORIES"
               :key="cat"
-              class="border rounded-xs px-1.5 py-1 text-center text-xs cursor-pointer transition-colors"
-              :class="
+              class="border rounded-xs px-1.5 py-1 text-center text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40 transition-colors"
+                :class="
                 tempSellFilter.has(cat) ? 'border-accent/50 bg-accent/10 text-accent' : 'border-accent/20 text-muted hover:bg-accent/5'
               "
               role="checkbox"
@@ -877,7 +1277,7 @@
             </div>
           </div>
 
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <Button
               v-if="buyModalData.batchBuy"
               class="w-full justify-center"
@@ -987,7 +1387,7 @@
             </div>
           </div>
 
-          <div class="flex flex-col space-y-1.5">
+          <div class="flex flex-col space-y-1.5" role="list">
             <Button class="w-full justify-center" :icon="Coins" @click="handleModalSell(sellQuantity)">{{ $i18n.locale === 'vi' ? 'Bán' : 'để bán' }} ×{{ sellQuantity }}</Button>
           </div>
         </div>
