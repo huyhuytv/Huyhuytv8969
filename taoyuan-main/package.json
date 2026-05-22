@@ -9,12 +9,12 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint src --ext .ts,.vue",
     "type-check": "vue-tsc -b",
     "check": "pnpm run type-check && pnpm run lint",
-    "build:electron": "vite build && esbuild electron/main.js --bundle --platform=node --format=esm --outfile=dist-electron/main.js --external:electron && esbuild electron/preload.js --bundle --platform=node --format=cjs --outfile=dist-electron/preload.js --external:electron && electron-builder",
+    "build:electron": "vue-tsc -b && vite build && esbuild electron/main.js --bundle --platform=node --format=esm --outfile=dist-electron/main.js --external:electron && esbuild electron/preload.js --bundle --platform=node --format=cjs --outfile=dist-electron/preload.js --external:electron && electron-builder",
     "build:android": "pnpm run build && npx cap sync android",
     "build:apk": "pnpm run build:android && cd android && ./gradlew assembleRelease"
   },
@@ -80,13 +80,5 @@
       "icon": "public/favicon.ico",
       "artifactName": "taoyuan-${version}-win.${ext}"
     }
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "core-js",
-      "electron-winstaller",
-      "electron",
-      "esbuild"
-    ]
   }
 }

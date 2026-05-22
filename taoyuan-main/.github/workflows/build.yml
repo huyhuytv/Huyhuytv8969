@@ -80,6 +80,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           cache-read-only: false
+          build-root-directory: android
 
       - name: 构建前端
         run: |
