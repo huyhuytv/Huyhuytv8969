@@ -1565,14 +1565,14 @@
         const cleaned = desc.replace('hiện tại', '').replace(/lưới/g, '')
         const parts = cleaned.split('→')
         if (parts.length === 2) {
-          return `Hiện tại ${parts[0].trim()} ô → ${parts[1].trim()} ô`
+          return `Hiện tại ${parts[0]!.trim()} ô → ${parts[1]!.trim()} ô`
         }
       }
       if (desc.includes('khe ngực')) {
         const cleaned = desc.replace('khe ngực', '')
         const parts = cleaned.split('→')
         if (parts.length === 2) {
-          return `Hầm chứa hòm ${parts[0].trim()} → ${parts[1].trim()}`
+          return `Hầm chứa hòm ${parts[0]!.trim()} → ${parts[1]!.trim()}`
         }
       }
       if (desc.includes('trưởng thành') && desc.includes('Sản phẩm theo mùa')) {

@@ -16,8 +16,8 @@ export function useFocusTrap(containerRef: Ref<HTMLElement | null>, options?: { 
       return
     }
 
-    const firstElement = focusableElements[0]
-    const lastElement = focusableElements[focusableElements.length - 1]
+    const firstElement = focusableElements[0]!
+    const lastElement = focusableElements[focusableElements.length - 1]!
 
     if (e.shiftKey) {
       if (document.activeElement === firstElement) {
@@ -48,9 +48,9 @@ export function useFocusTrap(containerRef: Ref<HTMLElement | null>, options?: { 
         if (typeof options?.initialFocus === 'string') {
           const el = containerRef.value.querySelector<HTMLElement>(options.initialFocus)
           if (el) el.focus()
-          else focusableElements[0].focus()
+          else focusableElements[0]!.focus()
         } else {
-          focusableElements[0].focus()
+          focusableElements[0]!.focus()
         }
       } else {
         containerRef.value.focus()
