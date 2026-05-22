@@ -1,8 +1,7 @@
 <template>
   <div class="border-b border-accent/30 pb-2 md:pb-3 flex flex-col space-y-1 focus:outline-none focus:ring-2 focus:ring-accent/40 rounded-xs p-1 -mx-1" 
-       role="region" 
-       tabindex="0"
-       :aria-label="statusBarAriaLabel">
+       tabindex="0">
+    <span class="sr-only">{{ statusBarAriaLabel }}</span>
     <div aria-hidden="true" class="flex flex-col space-y-1">
       <!-- 第一行：日期时间天气 + 铜钱 -->
       <div class="flex items-center justify-between text-xs md:text-sm">
